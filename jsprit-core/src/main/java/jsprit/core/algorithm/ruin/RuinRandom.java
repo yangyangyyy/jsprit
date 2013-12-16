@@ -22,6 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import jsprit.core.algorithm.events.RemoveJob;
+import jsprit.core.algorithm.events.RouteChangedEventListeners;
 import jsprit.core.algorithm.ruin.listener.RuinListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
 import jsprit.core.problem.VehicleRoutingProblem;
@@ -53,6 +55,8 @@ final class RuinRandom implements RuinStrategy {
 	
 	private RuinListeners ruinListeners;
 
+	private RouteChangedEventListeners routeChangedListeners;
+
 	public void setRandom(Random random) {
 		this.random = random;
 	}
@@ -68,6 +72,7 @@ final class RuinRandom implements RuinStrategy {
 		this.vrp = vrp;
 		this.fractionOfAllNodes2beRuined = fraction;
 		ruinListeners = new RuinListeners();
+		this.routeChangedListeners = new RouteChangedEventListeners();
 		logger.info("initialise " + this);
 		logger.info("done");
 	}
@@ -122,6 +127,7 @@ final class RuinRandom implements RuinStrategy {
 			Job job = pickRandomJob(availableJobs);
 			unassignedJobs.add(job);
 			availableJobs.remove(job);
+			routeChangedListeners.sendChangeEvent(new RemoveJob(job));
 			for (VehicleRoute route : vehicleRoutes) {
 				boolean removed = route.getTourActivities().removeJob(job);
 				if (removed) {
@@ -160,6 +166,10 @@ final class RuinRandom implements RuinStrategy {
 	@Override
 	public Collection<RuinListener> getListeners() {
 		return ruinListeners.getListeners();
+	}
+	
+	public void setRouteChangedListeners(RouteChangedEventListeners rcel){
+		this.routeChangedListeners = rcel;
 	}
 
 }
