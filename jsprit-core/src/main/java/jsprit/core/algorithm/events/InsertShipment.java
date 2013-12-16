@@ -3,7 +3,7 @@ package jsprit.core.algorithm.events;
 import jsprit.core.problem.job.Shipment;
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-public class InsertShipment extends InsertJob{
+public class InsertShipment {
 
 	private Shipment shipment;
 	
@@ -12,7 +12,6 @@ public class InsertShipment extends InsertJob{
 	private int deliveryIndex;
 	
 	public InsertShipment(VehicleRoute route2change, Shipment shipment, int pickupIndex, int deliveryIndex) {
-		super(route2change, shipment);
 		this.shipment = shipment;
 		this.pickupIndex = pickupIndex;
 		this.deliveryIndex = deliveryIndex;
