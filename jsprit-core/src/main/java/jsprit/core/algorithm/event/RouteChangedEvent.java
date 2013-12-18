@@ -1,4 +1,4 @@
-package jsprit.core.algorithm.events;
+package jsprit.core.algorithm.event;
 
 public interface RouteChangedEvent {
 

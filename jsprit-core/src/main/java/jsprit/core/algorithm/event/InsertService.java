@@ -1,4 +1,4 @@
-package jsprit.core.algorithm.events;
+package jsprit.core.algorithm.event;
 
 import jsprit.core.problem.job.Service;
 import jsprit.core.problem.solution.route.VehicleRoute;

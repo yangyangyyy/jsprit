@@ -22,8 +22,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import jsprit.core.algorithm.events.RemoveJob;
-import jsprit.core.algorithm.events.RouteChangedEventListeners;
+import jsprit.core.algorithm.event.RemoveJob;
+import jsprit.core.algorithm.event.RouteChangedEventListeners;
 import jsprit.core.algorithm.ruin.listener.RuinListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
 import jsprit.core.problem.VehicleRoutingProblem;
@@ -127,7 +127,7 @@ final class RuinRandom implements RuinStrategy {
 			Job job = pickRandomJob(availableJobs);
 			unassignedJobs.add(job);
 			availableJobs.remove(job);
-			routeChangedListeners.sendChangeEvent(new RemoveJob(job));
+			routeChangedListeners.sendRouteChangedEvent(new RemoveJob(job));
 			for (VehicleRoute route : vehicleRoutes) {
 				boolean removed = route.getTourActivities().removeJob(job);
 				if (removed) {

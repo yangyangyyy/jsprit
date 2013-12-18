@@ -1,9 +1,9 @@
-package jsprit.core.algorithm.events;
+package jsprit.core.algorithm.event;
 
 import jsprit.core.problem.job.Shipment;
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-public class InsertShipment {
+public class InsertShipment implements RouteChangedEvent{
 
 	private Shipment shipment;
 	
