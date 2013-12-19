@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import jsprit.core.algorithm.event.RouteChangedEvent;
+import jsprit.core.algorithm.event.RouteChangedEventListeners;
 import jsprit.core.algorithm.recreate.InsertionData.NoInsertionFound;
 import jsprit.core.algorithm.recreate.listener.InsertionListener;
 import jsprit.core.algorithm.recreate.listener.InsertionListeners;
@@ -83,6 +85,8 @@ final class BestInsertion implements InsertionStrategy{
 	private JobInsertionCostsCalculator bestInsertionCostCalculator;
 
 	private boolean minVehiclesFirst = false;
+	
+	private RouteChangedEventListeners routeChangedEventListeners;
 
 	public void setRandom(Random random) {
 		this.random = random;
@@ -93,6 +97,7 @@ final class BestInsertion implements InsertionStrategy{
 		this.insertionsListeners = new InsertionListeners();
 		inserter = new Inserter(insertionsListeners);
 		bestInsertionCostCalculator = jobInsertionCalculator;
+		routeChangedEventListeners = new RouteChangedEventListeners();
 		logger.info("initialise " + this);
 	}
 
@@ -139,10 +144,17 @@ final class BestInsertion implements InsertionStrategy{
 					vehicleRoutes.add(newRoute);
 				}
 			}
-//			logger.info("insert " + unassignedJob + " pickup@" + bestInsertion.getInsertionData().getPickupInsertionIndex() + " delivery@" + bestInsertion.getInsertionData().getDeliveryInsertionIndex());
+			sendRouteChangedEvents(bestInsertion.getInsertionData());
 			inserter.insertJob(unassignedJob, bestInsertion.getInsertionData(), bestInsertion.getRoute());
 		}
 		insertionsListeners.informInsertionEndsListeners(vehicleRoutes);
+	}
+
+	private void sendRouteChangedEvents(InsertionData insertionData) {
+		for(RouteChangedEvent e : insertionData.getRouteChangedEvents()){
+			routeChangedEventListeners.sendRouteChangedEvent(e);
+		}
+		
 	}
 
 	private String getErrorMsg(Job unassignedJob) {

@@ -30,6 +30,11 @@ public class RemoveJob implements RouteChangedEvent{
 	public Collection<VehicleRoute> getRoutes() {
 		return routes;
 	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return RemoveJob.class;
+	}
 	
 	
 

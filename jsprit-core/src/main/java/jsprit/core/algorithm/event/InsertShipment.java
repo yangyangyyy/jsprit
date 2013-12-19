@@ -11,10 +11,13 @@ public class InsertShipment implements RouteChangedEvent{
 	
 	private int deliveryIndex;
 	
+	private VehicleRoute route;
+	
 	public InsertShipment(VehicleRoute route2change, Shipment shipment, int pickupIndex, int deliveryIndex) {
 		this.shipment = shipment;
 		this.pickupIndex = pickupIndex;
 		this.deliveryIndex = deliveryIndex;
+		route=route2change;
 	}
 
 	/**
@@ -30,12 +33,24 @@ public class InsertShipment implements RouteChangedEvent{
 	public int getPickupIndex() {
 		return pickupIndex;
 	}
+	
+	/**
+	 * @return the route
+	 */
+	public VehicleRoute getRoute() {
+		return route;
+	}
 
 	/**
 	 * @return the deliveryIndex
 	 */
 	public int getDeliveryIndex() {
 		return deliveryIndex;
+	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return InsertShipment.class;
 	}
 	
 	

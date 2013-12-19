@@ -37,6 +37,11 @@ public class InsertService implements RouteChangedEvent{
 	public VehicleRoute getRoute() {
 		return route;
 	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return InsertService.class;
+	}
 	
 	
 

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 import jsprit.core.problem.job.Service;
@@ -120,6 +122,27 @@ public class TestRouteChangedEventListeners {
 		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
 		
 		assertTrue(listeners.getListener(null).isEmpty());
+	}
+	
+	@Test
+	public void whenCollectingDiffEventTypes_theyShouldBeRecognizedCorrectly(){
+		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		InsertServiceListener iServiceListener = new InsertServiceListener();
+		listeners.addRouteChangedEventListener(iServiceListener);
+		InsertShipmentListener iShipmentListener = new InsertShipmentListener();
+		listeners.addRouteChangedEventListener(iShipmentListener);
+		
+		Collection<RouteChangedEvent> events = new ArrayList<RouteChangedEvent>();
+		
+		InsertService iService = new InsertService(mock(VehicleRoute.class),mock(Service.class),1);
+		InsertShipment iShipment = new InsertShipment(mock(VehicleRoute.class),mock(Shipment.class),1,1);
+		
+		events.add(iService);
+		events.add(iShipment);
+
+		for(RouteChangedEvent e : events){
+			listeners.sendRouteChangedEvent(e);
+		}
 	}
 	
 

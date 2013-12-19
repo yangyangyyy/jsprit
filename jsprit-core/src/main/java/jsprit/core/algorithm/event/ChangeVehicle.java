@@ -28,6 +28,11 @@ public class ChangeVehicle implements RouteChangedEvent{
 	public Vehicle getNewVehicle() {
 		return newVehicle;
 	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return ChangeVehicle.class;
+	}
 	
 	
 

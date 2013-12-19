@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
 
+import jsprit.core.algorithm.event.RemoveJob;
+import jsprit.core.algorithm.event.RouteChangedEventListeners;
 import jsprit.core.algorithm.ruin.distance.JobDistance;
 import jsprit.core.algorithm.ruin.listener.RuinListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
@@ -238,7 +240,6 @@ final class RuinRadial implements RuinStrategy {
 		
 	}
 	
-	
 	static class ReferencedJob {
 		private Job job;
 		private double distance;
@@ -270,6 +271,8 @@ final class RuinRadial implements RuinStrategy {
 	
 	private JobNeighborhoods jobNeighborhoods;
 	
+	private RouteChangedEventListeners routeChangedEventListeners;
+	
 	public void setRandom(Random random) {
 		this.random = random;
 	}
@@ -290,40 +293,9 @@ final class RuinRadial implements RuinStrategy {
 		JobNeighborhoodsImplWithCapRestriction jobNeighborhoodsImpl = new JobNeighborhoodsImplWithCapRestriction(vrp, jobDistance, nJobsToMemorize);
 		jobNeighborhoodsImpl.initialise();
 		jobNeighborhoods = jobNeighborhoodsImpl;
+		routeChangedEventListeners = new RouteChangedEventListeners();
+		routeChangedEventListeners.addRouteChangedEventListener(new RemoveJobListener(ruinListeners));
 		logger.info("intialise " + this);
-//<<<<<<< HEAD
-//	}
-//
-//	private void calculateDistancesFromJob2Job() {
-//		logger.info("preprocess distances between locations ...");
-//		StopWatch stopWatch = new StopWatch();
-//		stopWatch.start();
-//		int nuOfDistancesStored = 0;
-//		for (Job i : vrp.getJobs().values()) {
-//			TreeSet<ReferencedJob> treeSet = new TreeSet<ReferencedJob>(
-//					new Comparator<ReferencedJob>() {
-//						@Override
-//						public int compare(ReferencedJob o1, ReferencedJob o2) {
-//							if (o1.getDistance() <= o2.getDistance()) {
-//								return 1;
-//							} else {
-//								return -1;
-//							}
-//						}
-//					});
-//			distanceNodeTree.put(i.getId(), treeSet);
-//			for (Job j : vrp.getJobs().values()) {
-//				double distance = jobDistance.getDistance(i, j);
-//				ReferencedJob refNode = new ReferencedJob(j, distance);
-//				treeSet.add(refNode);
-//				nuOfDistancesStored++;
-//			}
-//		}
-//		stopWatch.stop();
-//		logger.info("preprocessing comp-time: " + stopWatch + "; nuOfDistances stored: " + nuOfDistancesStored + "; estimated memory: " + 
-//				(distanceNodeTree.keySet().size()*64+nuOfDistancesStored*92) + " bytes");
-//=======
-//>>>>>>> refs/heads/master
 	}
 	
 	@Override
@@ -356,29 +328,18 @@ final class RuinRadial implements RuinStrategy {
 		ruinListeners.ruinStarts(vehicleRoutes);
 		List<Job> unassignedJobs = new ArrayList<Job>();
 		int nNeighbors = nOfJobs2BeRemoved - 1;
-		removeJob(targetJob,vehicleRoutes);
+		routeChangedEventListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, targetJob));
 		unassignedJobs.add(targetJob);
 		Iterator<Job> neighborhoodIterator =  jobNeighborhoods.getNearestNeighborsIterator(nNeighbors, targetJob);
 		while(neighborhoodIterator.hasNext()){
 			Job job = neighborhoodIterator.next();
-			removeJob(job,vehicleRoutes);
+			routeChangedEventListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, job));
 			unassignedJobs.add(job);
 		}
 		ruinListeners.ruinEnds(vehicleRoutes, unassignedJobs);
 		return unassignedJobs;
 	}
 	
-	private void removeJob(Job job, Collection<VehicleRoute> vehicleRoutes) {
-		boolean removed = false;
-		for (VehicleRoute route : vehicleRoutes) {
-			removed = route.getTourActivities().removeJob(job);; 
-			if (removed) {
-				ruinListeners.removed(job,route);
-				break;
-			}
-		}
-	}
-
 	private Job pickRandomJob() {
 		int totNuOfJobs = vrp.getJobs().values().size();
 		int randomIndex = random.nextInt(totNuOfJobs);
@@ -387,8 +348,7 @@ final class RuinRadial implements RuinStrategy {
 	}
 
 	private int getNuOfJobs2BeRemoved() {
-		return (int) Math.ceil(vrp.getJobs().values().size()
-				* fractionOfAllNodes2beRuined);
+		return (int) Math.ceil(vrp.getJobs().values().size() * fractionOfAllNodes2beRuined);
 	}
 
 	@Override

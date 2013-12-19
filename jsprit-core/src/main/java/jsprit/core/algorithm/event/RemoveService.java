@@ -17,5 +17,10 @@ public class RemoveService implements RouteChangedEvent{
 	public Service getService() {
 		return service;
 	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return RemoveService.class;
+	}
 	
 }

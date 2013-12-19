@@ -16,6 +16,11 @@
  ******************************************************************************/
 package jsprit.core.algorithm.recreate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import jsprit.core.algorithm.event.RouteChangedEvent;
 import jsprit.core.problem.driver.Driver;
 import jsprit.core.problem.vehicle.Vehicle;
 
@@ -54,17 +59,19 @@ public class InsertionData {
 
 	private final double insertionCost;
 	
-	private final int pickupInsertionIndex;
+	private int pickupInsertionIndex;
 	
-	private final int deliveryInsertionIndex;
+	private int deliveryInsertionIndex;
 	
-	private final Vehicle selectedVehicle;
+	private Vehicle selectedVehicle;
 	
-	private final Driver selectedDriver;
+	private Driver selectedDriver;
 	
 	private double departureTime;
 	
 	private double additionalTime;
+	
+	private Collection<RouteChangedEvent> routeChangedEvents;
 	
 	/**
 	 * @return the additionalTime
@@ -86,6 +93,20 @@ public class InsertionData {
 		this.deliveryInsertionIndex = deliveryInsertionIndex;
 		this.selectedVehicle = vehicle;
 		this.selectedDriver = driver;
+		routeChangedEvents = new ArrayList<RouteChangedEvent>();
+	}
+	
+	public InsertionData(double insertionCost){
+		this.insertionCost=insertionCost;
+		routeChangedEvents = new ArrayList<RouteChangedEvent>();
+	}
+	
+	public void addRouteChangedEvent(RouteChangedEvent event){
+		routeChangedEvents.add(event);
+	}
+	
+	public Collection<RouteChangedEvent> getRouteChangedEvents(){
+		return Collections.unmodifiableCollection(routeChangedEvents);
 	}
 	
 	@Override

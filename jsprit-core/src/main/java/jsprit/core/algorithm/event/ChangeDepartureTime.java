@@ -28,6 +28,11 @@ public class ChangeDepartureTime implements RouteChangedEvent{
 	public double getNewDepartureTime() {
 		return newDepartureTime;
 	}
+
+	@Override
+	public Class<? extends RouteChangedEvent> getType() {
+		return ChangeDepartureTime.class;
+	}
 	
 	
 	

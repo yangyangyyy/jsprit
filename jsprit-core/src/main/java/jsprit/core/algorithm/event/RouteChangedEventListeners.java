@@ -14,7 +14,7 @@ public class RouteChangedEventListeners {
 	
 	public <T extends RouteChangedEvent> void sendRouteChangedEvent(T event){
 		@SuppressWarnings("unchecked")
-		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(event.getClass());
+		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(event.getType());
 		if(list == null) return;
 		for(RouteChangedEventListener<T> l : list){
 			l.sendRouteChangedEvent(event);
