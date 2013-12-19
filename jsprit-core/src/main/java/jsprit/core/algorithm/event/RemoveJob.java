@@ -1,14 +1,20 @@
 package jsprit.core.algorithm.event;
 
+import java.util.Collection;
+
 import jsprit.core.problem.job.Job;
+import jsprit.core.problem.solution.route.VehicleRoute;
 
 public class RemoveJob implements RouteChangedEvent{
 	
 	private Job job;
+	
+	private Collection<VehicleRoute> routes;
 
-	public RemoveJob(Job job) {
+	public RemoveJob(Collection<VehicleRoute> routes, Job job) {
 		super();
 		this.job = job;
+		this.routes = routes;
 	}
 
 	/**
@@ -16,6 +22,13 @@ public class RemoveJob implements RouteChangedEvent{
 	 */
 	public Job getJob() {
 		return job;
+	}
+
+	/**
+	 * @return the routes
+	 */
+	public Collection<VehicleRoute> getRoutes() {
+		return routes;
 	}
 	
 	

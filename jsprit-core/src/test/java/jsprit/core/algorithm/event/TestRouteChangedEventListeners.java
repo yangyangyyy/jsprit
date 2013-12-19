@@ -3,6 +3,7 @@ package jsprit.core.algorithm.event;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Random;
@@ -83,6 +84,42 @@ public class TestRouteChangedEventListeners {
 		assertEquals(1,listeners.getListener(InsertService.class).size());
 		assertEquals(1,listeners.getListener(InsertShipment.class).size());
 		
+	}
+	
+	@Test
+	public void whenAddingNullListener_itIsIgnored(){
+		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		listeners.addRouteChangedEventListener(null);
+		assertTrue(true);
+	}
+	
+	@Test
+	public void whenRemovingListener_itShouldBeRemoved(){
+		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		InsertServiceListener iServiceListener = new InsertServiceListener();
+		listeners.addRouteChangedEventListener(iServiceListener);
+		InsertShipmentListener iShipmentListener = new InsertShipmentListener();
+		listeners.addRouteChangedEventListener(iShipmentListener);
+		
+		assertEquals(1,listeners.getListener(InsertService.class).size());
+		assertEquals(1,listeners.getListener(InsertShipment.class).size());
+		
+		listeners.removeRouteChangedEventListener(iServiceListener);
+		
+		assertEquals(0,listeners.getListener(InsertService.class).size());
+		assertEquals(1,listeners.getListener(InsertShipment.class).size());
+		
+		listeners.removeRouteChangedEventListener(iShipmentListener);
+		
+		assertEquals(0,listeners.getListener(InsertService.class).size());
+		assertEquals(0,listeners.getListener(InsertShipment.class).size());
+	}
+	
+	@Test
+	public void whenRequestingListenersWithNullArg_itShouldReturnAnEmptyList(){
+		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		
+		assertTrue(listeners.getListener(null).isEmpty());
 	}
 	
 
