@@ -5,7 +5,7 @@ import java.util.Collection;
 import jsprit.core.problem.job.Job;
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-public class RemoveJob implements RouteChangedEvent{
+public class RemoveJob implements RouteEvent{
 	
 	private Job job;
 	
@@ -32,7 +32,7 @@ public class RemoveJob implements RouteChangedEvent{
 	}
 
 	@Override
-	public Class<? extends RouteChangedEvent> getType() {
+	public Class<? extends RouteEvent> getType() {
 		return RemoveJob.class;
 	}
 	

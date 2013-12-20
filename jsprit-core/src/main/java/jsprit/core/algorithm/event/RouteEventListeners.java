@@ -8,16 +8,22 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RouteChangedEventListeners {
+public class RouteEventListeners {
 
 	private Map<Class<?>, List<?>> map = new HashMap<Class<?>, List<?>>();
 	
-	public <T extends RouteChangedEvent> void sendRouteChangedEvent(T event){
+	/**
+	 * Sends routeEvents to the according listeners.
+	 * 
+	 * @param eventSourceId
+	 * @param event
+	 */
+	public <T extends RouteEvent> void sendRouteEvent(String eventSourceId, T event){
 		@SuppressWarnings("unchecked")
-		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(event.getType());
+		List<RouteEventListener<T>> list = (List<RouteEventListener<T>>) map.get(event.getType());
 		if(list == null) return;
-		for(RouteChangedEventListener<T> l : list){
-			l.sendRouteChangedEvent(event);
+		for(RouteEventListener<T> l : list){
+			l.sendRouteEvent(eventSourceId, event);
 		}
 	}
 	
@@ -28,13 +34,13 @@ public class RouteChangedEventListeners {
 	 * not allowed). 
 	 * @param l
 	 */
-	public <T extends RouteChangedEvent> void addRouteChangedEventListener(RouteChangedEventListener<T> l){
+	public <T extends RouteEvent> void addRouteEventListener(RouteEventListener<T> l){
 		if(l == null) return;
 		if(l.getEventType() == null) throw new IllegalStateException("eventType in listener is unspecified. this must not be.");
 		@SuppressWarnings("unchecked")
-		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(l.getEventType());
+		List<RouteEventListener<T>> list = (List<RouteEventListener<T>>) map.get(l.getEventType());
 		if(list == null){
-			list = new ArrayList<RouteChangedEventListener<T>>();
+			list = new ArrayList<RouteEventListener<T>>();
 			map.put(l.getEventType(), list);
 		}
 		list.add(l);
@@ -47,11 +53,11 @@ public class RouteChangedEventListeners {
 	 * 
 	 * @param l
 	 */
-	public <T extends RouteChangedEvent> void removeRouteChangedEventListener(RouteChangedEventListener<T> l){
+	public <T extends RouteEvent> void removeRouteEventListener(RouteEventListener<T> l){
 		if(l == null) return;
 		if(l.getEventType() == null) throw new IllegalStateException("eventType in listener is unspecified. this must not be.");
 		@SuppressWarnings("unchecked")
-		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(l.getEventType());
+		List<RouteEventListener<T>> list = (List<RouteEventListener<T>>) map.get(l.getEventType());
 		if(list != null){
 			list.remove(l);
 		}
@@ -64,10 +70,10 @@ public class RouteChangedEventListeners {
 	 * @param eventType
 	 * @return
 	 */
-	public <T extends RouteChangedEvent> Collection<RouteChangedEventListener<T>> getListener(Class<T> eventType){
+	public <T extends RouteEvent> Collection<RouteEventListener<T>> getRouteEventListeners(Class<T> eventType){
 		if(eventType == null) return Collections.emptyList();
 		@SuppressWarnings("unchecked")
-		List<RouteChangedEventListener<T>> list = (List<RouteChangedEventListener<T>>) map.get(eventType);
+		List<RouteEventListener<T>> list = (List<RouteEventListener<T>>) map.get(eventType);
 		if(list == null) {
 			list = Collections.emptyList();
 		}

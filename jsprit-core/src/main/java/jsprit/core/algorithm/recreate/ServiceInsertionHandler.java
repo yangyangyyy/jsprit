@@ -1,17 +1,17 @@
 package jsprit.core.algorithm.recreate;
 
 import jsprit.core.algorithm.event.InsertService;
-import jsprit.core.algorithm.event.RouteChangedEventListener;
+import jsprit.core.algorithm.event.RouteEventListener;
 import jsprit.core.problem.solution.route.activity.DefaultTourActivityFactory;
 import jsprit.core.problem.solution.route.activity.TourActivityFactory;
 
 
-class ServiceInsertionHandler implements RouteChangedEventListener<InsertService>{
+class ServiceInsertionHandler implements RouteEventListener<InsertService>{
 
 	private TourActivityFactory activityFactory = new DefaultTourActivityFactory();
 	
 	@Override
-	public void sendRouteChangedEvent(InsertService event) {
+	public void sendRouteEvent(String eventSourceId, InsertService event) {
 		handle(event);
 	}
 

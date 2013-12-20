@@ -28,7 +28,8 @@ import java.util.Random;
 import java.util.TreeSet;
 
 import jsprit.core.algorithm.event.RemoveJob;
-import jsprit.core.algorithm.event.RouteChangedEventListeners;
+import jsprit.core.algorithm.event.RouteEventListeners;
+import jsprit.core.algorithm.event.RouteEventSource;
 import jsprit.core.algorithm.ruin.distance.JobDistance;
 import jsprit.core.algorithm.ruin.listener.RuinListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
@@ -51,7 +52,7 @@ import org.apache.log4j.Logger;
  * @author stefan
  *
  */
-final class RuinRadial implements RuinStrategy {
+final class RuinRadial implements RuinStrategy, RouteEventSource {
 	
 	static interface JobNeighborhoods {
 		
@@ -271,7 +272,7 @@ final class RuinRadial implements RuinStrategy {
 	
 	private JobNeighborhoods jobNeighborhoods;
 	
-	private RouteChangedEventListeners routeChangedEventListeners;
+	private RouteEventListeners routeEventListeners;
 	
 	public void setRandom(Random random) {
 		this.random = random;
@@ -293,8 +294,8 @@ final class RuinRadial implements RuinStrategy {
 		JobNeighborhoodsImplWithCapRestriction jobNeighborhoodsImpl = new JobNeighborhoodsImplWithCapRestriction(vrp, jobDistance, nJobsToMemorize);
 		jobNeighborhoodsImpl.initialise();
 		jobNeighborhoods = jobNeighborhoodsImpl;
-		routeChangedEventListeners = new RouteChangedEventListeners();
-		routeChangedEventListeners.addRouteChangedEventListener(new RemoveJobListener(ruinListeners));
+		routeEventListeners = new RouteEventListeners();
+		routeEventListeners.addRouteEventListener(new RemoveJobListener(ruinListeners));
 		logger.info("intialise " + this);
 	}
 	
@@ -328,12 +329,12 @@ final class RuinRadial implements RuinStrategy {
 		ruinListeners.ruinStarts(vehicleRoutes);
 		List<Job> unassignedJobs = new ArrayList<Job>();
 		int nNeighbors = nOfJobs2BeRemoved - 1;
-		routeChangedEventListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, targetJob));
+		routeEventListeners.sendRouteEvent(RuinRadial.class.toString(), new RemoveJob(vehicleRoutes, targetJob));
 		unassignedJobs.add(targetJob);
 		Iterator<Job> neighborhoodIterator =  jobNeighborhoods.getNearestNeighborsIterator(nNeighbors, targetJob);
 		while(neighborhoodIterator.hasNext()){
 			Job job = neighborhoodIterator.next();
-			routeChangedEventListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, job));
+			routeEventListeners.sendRouteEvent(RuinRadial.class.toString(), new RemoveJob(vehicleRoutes, job));
 			unassignedJobs.add(job);
 		}
 		ruinListeners.ruinEnds(vehicleRoutes, unassignedJobs);
@@ -364,6 +365,11 @@ final class RuinRadial implements RuinStrategy {
 	@Override
 	public Collection<RuinListener> getListeners() {
 		return ruinListeners.getListeners();
+	}
+
+	@Override
+	public void setRouteEventListeners(RouteEventListeners eventListeners) {
+		this.routeEventListeners=eventListeners;
 	}
 
 

@@ -3,7 +3,7 @@ package jsprit.core.algorithm.event;
 import jsprit.core.problem.job.Service;
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-public class InsertService implements RouteChangedEvent{
+public class InsertService implements RouteEvent{
 
 	private Service service;
 	
@@ -39,7 +39,7 @@ public class InsertService implements RouteChangedEvent{
 	}
 
 	@Override
-	public Class<? extends RouteChangedEvent> getType() {
+	public Class<? extends RouteEvent> getType() {
 		return InsertService.class;
 	}
 	

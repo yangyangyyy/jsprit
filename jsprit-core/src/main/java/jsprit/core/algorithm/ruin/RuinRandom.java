@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Random;
 
 import jsprit.core.algorithm.event.RemoveJob;
-import jsprit.core.algorithm.event.RouteChangedEventListeners;
+import jsprit.core.algorithm.event.RouteEventListeners;
+import jsprit.core.algorithm.event.RouteEventSource;
 import jsprit.core.algorithm.ruin.listener.RuinListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
 import jsprit.core.problem.VehicleRoutingProblem;
@@ -43,7 +44,7 @@ import org.apache.log4j.Logger;
  * 
  */
 
-final class RuinRandom implements RuinStrategy {
+final class RuinRandom implements RuinStrategy, RouteEventSource {
 	
 	private Logger logger = Logger.getLogger(RuinRandom.class);
 
@@ -55,7 +56,7 @@ final class RuinRandom implements RuinStrategy {
 	
 	private RuinListeners ruinListeners;
 
-	private RouteChangedEventListeners routeChangedListeners;
+	private RouteEventListeners routeChangedListeners;
 
 	public void setRandom(Random random) {
 		this.random = random;
@@ -72,8 +73,8 @@ final class RuinRandom implements RuinStrategy {
 		this.vrp = vrp;
 		this.fractionOfAllNodes2beRuined = fraction;
 		ruinListeners = new RuinListeners();
-		this.routeChangedListeners = new RouteChangedEventListeners();
-		this.routeChangedListeners.addRouteChangedEventListener(new RemoveJobListener(ruinListeners));
+		this.routeChangedListeners = new RouteEventListeners();
+		this.routeChangedListeners.addRouteEventListener(new RemoveJobListener(ruinListeners));
 		logger.info("initialise " + this);
 		logger.info("done");
 	}
@@ -101,7 +102,7 @@ final class RuinRandom implements RuinStrategy {
 		ruinListeners.ruinStarts(vehicleRoutes);
 		List<Job> unassignedJobs = new ArrayList<Job>();
 		if(targetJob != null){
-			routeChangedListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, targetJob));
+			routeChangedListeners.sendRouteEvent(RuinRandom.class.toString(), new RemoveJob(vehicleRoutes, targetJob));
 			nOfJobs2BeRemoved--;
 			unassignedJobs.add(targetJob);
 		}
@@ -121,7 +122,7 @@ final class RuinRandom implements RuinStrategy {
 			Job job = pickRandomJob(availableJobs);
 			unassignedJobs.add(job);
 			availableJobs.remove(job);
-			routeChangedListeners.sendRouteChangedEvent(new RemoveJob(vehicleRoutes, job));
+			routeChangedListeners.sendRouteEvent(RuinRandom.class.toString(), new RemoveJob(vehicleRoutes, job));
 		}
 	}
 
@@ -154,9 +155,10 @@ final class RuinRandom implements RuinStrategy {
 	public Collection<RuinListener> getListeners() {
 		return ruinListeners.getListeners();
 	}
-	
-	public void setRouteChangedListeners(RouteChangedEventListeners rcel){
-		this.routeChangedListeners = rcel;
+
+	@Override
+	public void setRouteEventListeners(RouteEventListeners eventListeners) {
+		this.routeChangedListeners = eventListeners;
 	}
 
 }

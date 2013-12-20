@@ -2,7 +2,7 @@ package jsprit.core.algorithm.event;
 
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-public class ChangeDepartureTime implements RouteChangedEvent{
+public class ChangeDepartureTime implements RouteEvent{
 	
 	private VehicleRoute vehicleRoute;
 	
@@ -30,7 +30,7 @@ public class ChangeDepartureTime implements RouteChangedEvent{
 	}
 
 	@Override
-	public Class<? extends RouteChangedEvent> getType() {
+	public Class<? extends RouteEvent> getType() {
 		return ChangeDepartureTime.class;
 	}
 	

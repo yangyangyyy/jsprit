@@ -2,7 +2,7 @@ package jsprit.core.algorithm.event;
 
 import jsprit.core.problem.job.Service;
 
-public class RemoveService implements RouteChangedEvent{
+public class RemoveService implements RouteEvent{
 
 	private Service service;
 
@@ -19,7 +19,7 @@ public class RemoveService implements RouteChangedEvent{
 	}
 
 	@Override
-	public Class<? extends RouteChangedEvent> getType() {
+	public Class<? extends RouteEvent> getType() {
 		return RemoveService.class;
 	}
 	

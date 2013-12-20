@@ -1,18 +1,18 @@
 package jsprit.core.algorithm.recreate;
 
 import jsprit.core.algorithm.event.InsertShipment;
-import jsprit.core.algorithm.event.RouteChangedEventListener;
+import jsprit.core.algorithm.event.RouteEventListener;
 import jsprit.core.problem.solution.route.activity.DefaultShipmentActivityFactory;
 import jsprit.core.problem.solution.route.activity.TourActivity;
 import jsprit.core.problem.solution.route.activity.TourShipmentActivityFactory;
 
 
-class ShipmentInsertionHandler implements RouteChangedEventListener<InsertShipment>{
+class ShipmentInsertionHandler implements RouteEventListener<InsertShipment>{
 
 	private TourShipmentActivityFactory activityFactory = new DefaultShipmentActivityFactory();
 
 	@Override
-	public void sendRouteChangedEvent(InsertShipment event) {
+	public void sendRouteEvent(String eventSourceId, InsertShipment event) {
 		handle(event);
 	}
 

@@ -1,11 +1,11 @@
 package jsprit.core.algorithm.ruin;
 
 import jsprit.core.algorithm.event.RemoveJob;
-import jsprit.core.algorithm.event.RouteChangedEventListener;
+import jsprit.core.algorithm.event.RouteEventListener;
 import jsprit.core.algorithm.ruin.listener.RuinListeners;
 import jsprit.core.problem.solution.route.VehicleRoute;
 
-class RemoveJobListener implements RouteChangedEventListener<RemoveJob>{
+class RemoveJobListener implements RouteEventListener<RemoveJob>{
 
 	private RuinListeners ruinListeners;
 	
@@ -15,7 +15,7 @@ class RemoveJobListener implements RouteChangedEventListener<RemoveJob>{
 	}
 
 	@Override
-	public void sendRouteChangedEvent(RemoveJob event) {
+	public void sendRouteEvent(String eventSourceId, RemoveJob event) {
 		boolean removed = false;
 		for (VehicleRoute route : event.getRoutes()) {
 			removed = route.getTourActivities().removeJob(event.getJob());

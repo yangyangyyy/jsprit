@@ -1,12 +1,12 @@
 package jsprit.core.algorithm.recreate;
 
 import jsprit.core.algorithm.event.ChangeDepartureTime;
-import jsprit.core.algorithm.event.RouteChangedEventListener;
+import jsprit.core.algorithm.event.RouteEventListener;
 
-class DepartureTimeChangedHandler implements RouteChangedEventListener<ChangeDepartureTime>{
+class DepartureTimeChangedHandler implements RouteEventListener<ChangeDepartureTime>{
 
 	@Override
-	public void sendRouteChangedEvent(ChangeDepartureTime event) {
+	public void sendRouteEvent(String eventSourceId, ChangeDepartureTime event) {
 		handle(event);
 	}
 	

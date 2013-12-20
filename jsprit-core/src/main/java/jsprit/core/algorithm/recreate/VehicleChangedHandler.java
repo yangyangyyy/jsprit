@@ -1,12 +1,12 @@
 package jsprit.core.algorithm.recreate;
 
 import jsprit.core.algorithm.event.ChangeVehicle;
-import jsprit.core.algorithm.event.RouteChangedEventListener;
+import jsprit.core.algorithm.event.RouteEventListener;
 
-class VehicleChangedHandler implements RouteChangedEventListener<ChangeVehicle>{
+class VehicleChangedHandler implements RouteEventListener<ChangeVehicle>{
 
 	@Override
-	public void sendRouteChangedEvent(ChangeVehicle event) {
+	public void sendRouteEvent(String eventSourceId, ChangeVehicle event) {
 		handle(event);
 	}
 

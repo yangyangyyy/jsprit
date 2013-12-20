@@ -18,10 +18,10 @@ import org.junit.Test;
 
 public class TestRouteChangedEventListeners {
 	
-	static class InsertServiceListener implements RouteChangedEventListener<InsertService> {
+	static class InsertServiceListener implements RouteEventListener<InsertService> {
 
 		@Override
-		public void sendRouteChangedEvent(InsertService event) {
+		public void sendRouteEvent(String eventSourceId, InsertService event) {
 			System.out.println("insertion service event. huhuhu.");
 		}
 
@@ -32,10 +32,10 @@ public class TestRouteChangedEventListeners {
 
 	}
 	
-	static class InsertShipmentListener implements RouteChangedEventListener<InsertShipment> {
+	static class InsertShipmentListener implements RouteEventListener<InsertShipment> {
 
 		@Override
-		public void sendRouteChangedEvent(InsertShipment event) {
+		public void sendRouteEvent(String eventSourceId, InsertShipment event) {
 			System.out.println("insertion of shipment event. lalala.");
 		}
 
@@ -48,91 +48,91 @@ public class TestRouteChangedEventListeners {
 	
 	@Test
 	public void whenAddingListener_itIsAdded(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
-		listeners.addRouteChangedEventListener(new InsertServiceListener());
+		RouteEventListeners listeners = new RouteEventListeners();
+		listeners.addRouteEventListener(new InsertServiceListener());
 		
 		InsertService iService = new InsertService(mock(VehicleRoute.class),mock(Service.class),1);
-		listeners.sendRouteChangedEvent(iService);
+		listeners.sendRouteEvent("source", iService);
 		
-		assertEquals(1,listeners.getListener(InsertService.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertService.class).size());
 	}
 	
 	@Test
 	public void whenAddingNListener_theyAreAdded(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		RouteEventListeners listeners = new RouteEventListeners();
 		Random rand = new Random();
 		int n = rand.nextInt(20);
 		for(int i=0;i<n;i++)
-			listeners.addRouteChangedEventListener(new InsertServiceListener());
+			listeners.addRouteEventListener(new InsertServiceListener());
 		
 		InsertService iService = new InsertService(mock(VehicleRoute.class),mock(Service.class),1);
-		listeners.sendRouteChangedEvent(iService);
+		listeners.sendRouteEvent("source", iService);
 		
-		assertEquals(n,listeners.getListener(InsertService.class).size());
+		assertEquals(n,listeners.getRouteEventListeners(InsertService.class).size());
 	}
 	
 	@Test
 	public void whenAddingListenersOfDiffType_theyAreAdded(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
-		listeners.addRouteChangedEventListener(new InsertServiceListener());
-		listeners.addRouteChangedEventListener(new InsertShipmentListener());
+		RouteEventListeners listeners = new RouteEventListeners();
+		listeners.addRouteEventListener(new InsertServiceListener());
+		listeners.addRouteEventListener(new InsertShipmentListener());
 		
 		InsertService iService = new InsertService(mock(VehicleRoute.class),mock(Service.class),1);
-		listeners.sendRouteChangedEvent(iService);
+		listeners.sendRouteEvent("source", iService);
 		
 		InsertShipment iShipment = new InsertShipment(mock(VehicleRoute.class),mock(Shipment.class),1,1);
-		listeners.sendRouteChangedEvent(iShipment);
+		listeners.sendRouteEvent("source", iShipment);
 		
-		assertEquals(1,listeners.getListener(InsertService.class).size());
-		assertEquals(1,listeners.getListener(InsertShipment.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertService.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertShipment.class).size());
 		
 	}
 	
 	@Test
 	public void whenAddingNullListener_itIsIgnored(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
-		listeners.addRouteChangedEventListener(null);
+		RouteEventListeners listeners = new RouteEventListeners();
+		listeners.addRouteEventListener(null);
 		assertTrue(true);
 	}
 	
 	@Test
 	public void whenRemovingListener_itShouldBeRemoved(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		RouteEventListeners listeners = new RouteEventListeners();
 		InsertServiceListener iServiceListener = new InsertServiceListener();
-		listeners.addRouteChangedEventListener(iServiceListener);
+		listeners.addRouteEventListener(iServiceListener);
 		InsertShipmentListener iShipmentListener = new InsertShipmentListener();
-		listeners.addRouteChangedEventListener(iShipmentListener);
+		listeners.addRouteEventListener(iShipmentListener);
 		
-		assertEquals(1,listeners.getListener(InsertService.class).size());
-		assertEquals(1,listeners.getListener(InsertShipment.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertService.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertShipment.class).size());
 		
-		listeners.removeRouteChangedEventListener(iServiceListener);
+		listeners.removeRouteEventListener(iServiceListener);
 		
-		assertEquals(0,listeners.getListener(InsertService.class).size());
-		assertEquals(1,listeners.getListener(InsertShipment.class).size());
+		assertEquals(0,listeners.getRouteEventListeners(InsertService.class).size());
+		assertEquals(1,listeners.getRouteEventListeners(InsertShipment.class).size());
 		
-		listeners.removeRouteChangedEventListener(iShipmentListener);
+		listeners.removeRouteEventListener(iShipmentListener);
 		
-		assertEquals(0,listeners.getListener(InsertService.class).size());
-		assertEquals(0,listeners.getListener(InsertShipment.class).size());
+		assertEquals(0,listeners.getRouteEventListeners(InsertService.class).size());
+		assertEquals(0,listeners.getRouteEventListeners(InsertShipment.class).size());
 	}
 	
 	@Test
 	public void whenRequestingListenersWithNullArg_itShouldReturnAnEmptyList(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		RouteEventListeners listeners = new RouteEventListeners();
 		
-		assertTrue(listeners.getListener(null).isEmpty());
+		assertTrue(listeners.getRouteEventListeners(null).isEmpty());
 	}
 	
 	@Test
 	public void whenCollectingDiffEventTypes_theyShouldBeRecognizedCorrectly(){
-		RouteChangedEventListeners listeners = new RouteChangedEventListeners();
+		RouteEventListeners listeners = new RouteEventListeners();
 		InsertServiceListener iServiceListener = new InsertServiceListener();
-		listeners.addRouteChangedEventListener(iServiceListener);
+		listeners.addRouteEventListener(iServiceListener);
 		InsertShipmentListener iShipmentListener = new InsertShipmentListener();
-		listeners.addRouteChangedEventListener(iShipmentListener);
+		listeners.addRouteEventListener(iShipmentListener);
 		
-		Collection<RouteChangedEvent> events = new ArrayList<RouteChangedEvent>();
+		Collection<RouteEvent> events = new ArrayList<RouteEvent>();
 		
 		InsertService iService = new InsertService(mock(VehicleRoute.class),mock(Service.class),1);
 		InsertShipment iShipment = new InsertShipment(mock(VehicleRoute.class),mock(Shipment.class),1,1);
@@ -140,8 +140,8 @@ public class TestRouteChangedEventListeners {
 		events.add(iService);
 		events.add(iShipment);
 
-		for(RouteChangedEvent e : events){
-			listeners.sendRouteChangedEvent(e);
+		for(RouteEvent e : events){
+			listeners.sendRouteEvent("source", e);
 		}
 	}
 	

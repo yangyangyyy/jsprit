@@ -22,8 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import jsprit.core.algorithm.event.RouteChangedEvent;
-import jsprit.core.algorithm.event.RouteChangedEventListeners;
+import jsprit.core.algorithm.event.RouteChanged;
+import jsprit.core.algorithm.event.RouteEvent;
+import jsprit.core.algorithm.event.RouteEventListeners;
+import jsprit.core.algorithm.event.RouteEventSource;
 import jsprit.core.algorithm.recreate.InsertionData.NoInsertionFound;
 import jsprit.core.algorithm.recreate.listener.InsertionListener;
 import jsprit.core.algorithm.recreate.listener.InsertionListeners;
@@ -44,7 +46,7 @@ import org.apache.log4j.Logger;
  * 
  */
 
-final class BestInsertion implements InsertionStrategy{
+final class BestInsertion implements InsertionStrategy, RouteEventSource{
 	
 	class Insertion {
 		
@@ -86,7 +88,7 @@ final class BestInsertion implements InsertionStrategy{
 
 	private boolean minVehiclesFirst = false;
 	
-	private RouteChangedEventListeners routeChangedEventListeners;
+	private RouteEventListeners routeEventListeners;
 
 	public void setRandom(Random random) {
 		this.random = random;
@@ -97,7 +99,7 @@ final class BestInsertion implements InsertionStrategy{
 		this.insertionsListeners = new InsertionListeners();
 		inserter = new Inserter(insertionsListeners);
 		bestInsertionCostCalculator = jobInsertionCalculator;
-		routeChangedEventListeners = new RouteChangedEventListeners();
+		routeEventListeners = new RouteEventListeners();
 		logger.info("initialise " + this);
 	}
 
@@ -144,17 +146,17 @@ final class BestInsertion implements InsertionStrategy{
 					vehicleRoutes.add(newRoute);
 				}
 			}
-			sendRouteChangedEvents(bestInsertion.getInsertionData());
+			sendRouteEvents(bestInsertion.getRoute(), bestInsertion.getInsertionData());
 			inserter.insertJob(unassignedJob, bestInsertion.getInsertionData(), bestInsertion.getRoute());
 		}
 		insertionsListeners.informInsertionEndsListeners(vehicleRoutes);
 	}
 
-	private void sendRouteChangedEvents(InsertionData insertionData) {
-		for(RouteChangedEvent e : insertionData.getRouteChangedEvents()){
-			routeChangedEventListeners.sendRouteChangedEvent(e);
+	private void sendRouteEvents(VehicleRoute vehicleRoute, InsertionData insertionData) {
+		for(RouteEvent e : insertionData.getRouteChangedEvents()){
+			routeEventListeners.sendRouteEvent(BestInsertion.class.toString(), e);
 		}
-		
+		routeEventListeners.sendRouteEvent(BestInsertion.class.toString(), new RouteChanged(vehicleRoute));
 	}
 
 	private String getErrorMsg(Job unassignedJob) {
@@ -180,6 +182,11 @@ final class BestInsertion implements InsertionStrategy{
 	public void addListener(InsertionListener insertionListener) {
 		insertionsListeners.addListener(insertionListener);
 		
+	}
+
+	@Override
+	public void setRouteEventListeners(RouteEventListeners eventListeners) {
+		this.routeEventListeners=eventListeners;
 	}
 
 }
