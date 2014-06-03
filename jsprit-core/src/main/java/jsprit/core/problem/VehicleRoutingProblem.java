@@ -311,10 +311,6 @@ public class VehicleRoutingProblem {
 		 */
 		public VehicleRoutingProblem build() {
 			logger.info("build problem ...");
-			if(transportCosts == null){
-				logger.warn("set routing costs crowFlyDistance.");
-				transportCosts = new CrowFlyCosts(getLocations());
-			}
 			if(addPenaltyVehicles){
 				if(fleetSize.equals(FleetSize.INFINITE)){
 					logger.warn("penaltyType and FleetSize.INFINITE does not make sense. thus no penalty-types are added.");
@@ -327,6 +323,17 @@ public class VehicleRoutingProblem {
 				if(!jobsInInitialRoutes.contains(job.getId())){
 					addJobToFinalJobMap(job);
 				}
+			}
+			if(transportCosts == null){
+				logger.warn("set routing costs crowFlyDistance.");
+				transportCosts = new CrowFlyCosts(new Locations(){
+
+					@Override
+					public Coordinate getCoord(String id) {
+						return coordinates.get(id);
+					}
+					
+				});
 			}
 			return new VehicleRoutingProblem(this);
 		}
@@ -552,7 +559,7 @@ public class VehicleRoutingProblem {
 	
 	private final Locations locations;
 	
-	private VehicleRoutingProblem(Builder builder) {
+	private VehicleRoutingProblem(final Builder builder) {
 		this.jobs = builder.jobs;
 		this.fleetSize = builder.fleetSize;
 		this.vehicles=builder.uniqueVehicles;
@@ -561,7 +568,15 @@ public class VehicleRoutingProblem {
 		this.transportCosts = builder.transportCosts;
 		this.activityCosts = builder.activityCosts;
 		this.constraints = builder.constraints;
-		this.locations = builder.getLocations();
+		this.locations = new Locations(){
+
+			@Override
+			public Coordinate getCoord(String id) {
+				return builder.coordinates.get(id);
+			}
+			
+		};
+//		this.locations = builder.getLocations();
 		logger.info("initialise " + this);
 	}
 	
