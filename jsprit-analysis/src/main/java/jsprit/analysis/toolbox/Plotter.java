@@ -239,6 +239,12 @@ public class Plotter {
 		return this;
 	}
 	
+	/**
+	 * Scales coordinates by scalingFactor, i.e. multiplies x and y with scalingFactor.
+	 * 
+	 * @param scalingFactor
+	 * @return
+	 */
 	public Plotter setScalingFactor(double scalingFactor){
 		this.scalingFactor=scalingFactor;
 		return this;
@@ -408,13 +414,13 @@ public class Plotter {
 		return problemRenderer;
 	}
 
-	private Range getRange(final XYSeriesCollection seriesCol) {
-		if(this.boundingBox==null) return seriesCol.getRangeBounds(false);
+	private Range getRange(final XYSeriesCollection problem, XYSeriesCollection solution) {
+		if(this.boundingBox==null) return Range.combine(problem.getRangeBounds(false),solution.getDomainBounds(false));
 		else return new Range(boundingBox.minY, boundingBox.maxY);
 	}
 
-	private Range getDomainRange(final XYSeriesCollection seriesCol) {
-		if(this.boundingBox == null) return seriesCol.getDomainBounds(true);
+	private Range getDomainRange(final XYSeriesCollection problem, XYSeriesCollection solution) {
+		if(this.boundingBox == null) return Range.combine(problem.getDomainBounds(true),solution.getDomainBounds(true));
 		else return new Range(boundingBox.minX, boundingBox.maxX);
 	}
 
@@ -442,8 +448,8 @@ public class Plotter {
 		NumberAxis yAxis = new NumberAxis();
 		
 		if(boundingBox == null){
-			xAxis.setRangeWithMargins(getDomainRange(problem));
-			yAxis.setRangeWithMargins(getRange(problem));
+			xAxis.setRangeWithMargins(getDomainRange(problem,solution));
+			yAxis.setRangeWithMargins(getRange(problem,solution));
 		}
 		else{
 			xAxis.setRangeWithMargins(new Range(boundingBox.minX, boundingBox.maxX));
@@ -485,11 +491,15 @@ public class Plotter {
 			XYSeries series = new XYSeries(counter, false, true);
 			
 			Coordinate startCoord = locations.getCoord(route.getStart().getLocationId());
-			series.add(startCoord.getX()*scalingFactor, startCoord.getY()*scalingFactor);
+			XYDataItem startItem = new XYDataItem(startCoord.getX()*scalingFactor, startCoord.getY()*scalingFactor); 
+			markItem(startItem, Activity.START);
+			series.add(startItem);
 			
 			for(TourActivity act : route.getTourActivities().getActivities()){
 				Coordinate coord = locations.getCoord(act.getLocationId());
-				series.add(coord.getX()*scalingFactor, coord.getY()*scalingFactor);
+				XYDataItem actItem = new XYDataItem(coord.getX()*scalingFactor, coord.getY()*scalingFactor);
+//				markItem(actItem,getMark(act));
+				series.add(actItem);
 			}
 			
 			Coordinate endCoord = locations.getCoord(route.getEnd().getLocationId());
@@ -501,6 +511,11 @@ public class Plotter {
 		return coll;
 	}
 	
+//	private Activity getMark(TourActivity act) {
+//		if(act.getName().contains(arg0))
+//		return null;
+//	}
+
 	private XYSeriesCollection makeShipmentSeries(Collection<Job> jobs) throws NoLocationFoundException{
 		XYSeriesCollection coll = new XYSeriesCollection();
 		if(!plotShipments) return coll;
@@ -534,13 +549,13 @@ public class Plotter {
 			XYDataItem dataItem = new XYDataItem(s.getPickupCoord().getX()*scalingFactor, s.getPickupCoord().getY()*scalingFactor);
 			activities.add(dataItem);
 			addLabel(s, dataItem);
-			markItem(dataItem,Activity.PICKUP, job);
+			markItem(dataItem,Activity.PICKUP);
 			containsPickupAct = true;
 			
 			XYDataItem dataItem2 = new XYDataItem(s.getDeliveryCoord().getX()*scalingFactor, s.getDeliveryCoord().getY()*scalingFactor);
 			activities.add(dataItem2);
 			addLabel(s, dataItem2);
-			markItem(dataItem2,Activity.DELIVERY, job);
+			markItem(dataItem2,Activity.DELIVERY);
 			containsDeliveryAct = true;
 		}
 		else if(job instanceof Pickup){
@@ -549,7 +564,7 @@ public class Plotter {
 			XYDataItem dataItem = new XYDataItem(coord.getX()*scalingFactor, coord.getY()*scalingFactor);
 			activities.add(dataItem);
 			addLabel(service, dataItem);
-			markItem(dataItem, Activity.PICKUP, job);
+			markItem(dataItem, Activity.PICKUP);
 			containsPickupAct = true;
 		}
 		else if(job instanceof Delivery){
@@ -558,7 +573,7 @@ public class Plotter {
 			XYDataItem dataItem = new XYDataItem(coord.getX()*scalingFactor, coord.getY()*scalingFactor);
 			activities.add(dataItem);
 			addLabel(service, dataItem);
-			markItem(dataItem, Activity.DELIVERY, job);
+			markItem(dataItem, Activity.DELIVERY);
 			containsDeliveryAct = true;
 		}
 		else if(job instanceof Service){
@@ -567,7 +582,7 @@ public class Plotter {
 			XYDataItem dataItem = new XYDataItem(coord.getX()*scalingFactor, coord.getY()*scalingFactor);
 			activities.add(dataItem);
 			addLabel(service, dataItem);
-			markItem(dataItem, Activity.SERVICE, job);
+			markItem(dataItem, Activity.SERVICE);
 			containsServiceAct = true;
 		}
 		else{
@@ -608,7 +623,7 @@ public class Plotter {
 			Coordinate startCoord = v.getStartLocationCoordinate();
 			if(startCoord == null) throw new NoLocationFoundException();
 			XYDataItem item = new XYDataItem(startCoord.getX()*scalingFactor, startCoord.getY()*scalingFactor);
-			markItem(item,Activity.START, null);
+			markItem(item,Activity.START);
 			activities.add(item);
 			
 			if(!v.getStartLocationId().equals(v.getEndLocationId())){
@@ -627,7 +642,7 @@ public class Plotter {
 		}
 	}
 	
-	private void markItem(XYDataItem item, Activity activity, Job job) {
+	private void markItem(XYDataItem item, Activity activity) {
 		activitiesByDataItem.put(item,activity);
 	}
 
