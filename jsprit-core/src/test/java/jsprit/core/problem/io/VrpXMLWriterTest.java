@@ -26,6 +26,7 @@ import jsprit.core.problem.solution.route.VehicleRoute;
 import jsprit.core.problem.solution.route.activity.TimeWindow;
 import jsprit.core.problem.vehicle.Vehicle;
 import jsprit.core.problem.vehicle.VehicleImpl;
+import jsprit.core.problem.vehicle.VehicleType;
 import jsprit.core.problem.vehicle.VehicleTypeImpl;
 import jsprit.core.util.Coordinate;
 import jsprit.core.util.Solutions;
@@ -831,6 +832,70 @@ public class VrpXMLWriterTest {
 		assertEquals(0,v.getType().getCapacityDimensions().get(9));
 		assertEquals(10000,v.getType().getCapacityDimensions().get(10));
 	}
+
+    @Test
+    public void whenWritingVehicleMaxOperationTime_itShouldBeWrittenAndRereadCorrectlyV2(){
+        Builder builder = VehicleRoutingProblem.Builder.newInstance();
+
+        VehicleImpl v2 = VehicleImpl.Builder.newInstance("v").setStartLocationId("startLoc").setStartLocationCoordinate(Coordinate.newInstance(1, 2))
+                .setEndLocationId("endLoc").setEndLocationCoordinate(Coordinate.newInstance(4, 5))
+                .setMaxOperationTime(100.).build();
+        builder.addVehicle(v2);
+
+        VehicleRoutingProblem vrp = builder.build();
+        new VrpXMLWriter(vrp).write(infileName);
+
+        VehicleRoutingProblem.Builder vrpToReadBuilder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(vrpToReadBuilder).read(infileName);
+        VehicleRoutingProblem readVrp = vrpToReadBuilder.build();
+
+        Vehicle v = getVehicle("v",readVrp.getVehicles());
+        assertEquals(100.,v.getMaxOperationTime(),0.01);
+    }
+
+    @Test
+    public void whenWritingVehicleTypeWithWaitingTimeParameter_itShouldBeWrittenAndRereadCorrectlyV2(){
+        Builder builder = VehicleRoutingProblem.Builder.newInstance();
+
+        VehicleType type = VehicleTypeImpl.Builder.newInstance("type").setWaitingTimeParameter(10.).build();
+
+        VehicleImpl v2 = VehicleImpl.Builder.newInstance("v").setStartLocationId("startLoc").setStartLocationCoordinate(Coordinate.newInstance(1, 2))
+                .setEndLocationId("endLoc").setEndLocationCoordinate(Coordinate.newInstance(4, 5))
+                .setMaxOperationTime(100.).setType(type).build();
+        builder.addVehicle(v2);
+
+        VehicleRoutingProblem vrp = builder.build();
+        new VrpXMLWriter(vrp).write(infileName);
+
+        VehicleRoutingProblem.Builder vrpToReadBuilder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(vrpToReadBuilder).read(infileName);
+        VehicleRoutingProblem readVrp = vrpToReadBuilder.build();
+
+        Vehicle v = getVehicle("v",readVrp.getVehicles());
+        assertEquals(10.,v.getType().getVehicleCostParams().getWaitingTimeParameter(),0.01);
+    }
+
+    @Test
+    public void whenWritingVehicleTypeWithServiceTimeParameter_itShouldBeWrittenAndRereadCorrectlyV2(){
+        Builder builder = VehicleRoutingProblem.Builder.newInstance();
+
+        VehicleType type = VehicleTypeImpl.Builder.newInstance("type").setServiceTimeParameter(5.).build();
+
+        VehicleImpl v2 = VehicleImpl.Builder.newInstance("v").setStartLocationId("startLoc").setStartLocationCoordinate(Coordinate.newInstance(1, 2))
+                .setEndLocationId("endLoc").setEndLocationCoordinate(Coordinate.newInstance(4, 5))
+                .setMaxOperationTime(100.).setType(type).build();
+        builder.addVehicle(v2);
+
+        VehicleRoutingProblem vrp = builder.build();
+        new VrpXMLWriter(vrp).write(infileName);
+
+        VehicleRoutingProblem.Builder vrpToReadBuilder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(vrpToReadBuilder).read(infileName);
+        VehicleRoutingProblem readVrp = vrpToReadBuilder.build();
+
+        Vehicle v = getVehicle("v",readVrp.getVehicles());
+        assertEquals(5.,v.getType().getVehicleCostParams().getServiceTimeParameter(),0.01);
+    }
 	
 	private Vehicle getVehicle(String string, Collection<Vehicle> vehicles) {
 		for(Vehicle v : vehicles) if(string.equals(v.getId())) return v;
@@ -853,7 +918,7 @@ public class VrpXMLWriterTest {
 	}
 	
 	@Test
-	public void whenReadingInitialRouteWithDepTime10_departureTimeOfRouteShouldBeReadCorrectly(){ 
+	public void whenReadWriteInitialRouteWithDepTime10_departureTimeOfRouteShouldBeReadCorrectly(){
 		VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
 		new VrpXMLReader(builder).read("src/test/resources/finiteVrpWithInitialSolutionForReaderTest.xml");
 		VehicleRoutingProblem vrp = builder.build();
@@ -868,7 +933,7 @@ public class VrpXMLWriterTest {
 	}
 	
 	@Test
-	public void whenReadingInitialRoute_nuInitialRoutesShouldBeCorrect(){ 
+	public void whenReadWriteInitialRoute_nuInitialRoutesShouldBeCorrect(){
 		VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
 		new VrpXMLReader(builder, null).read("src/test/resources/finiteVrpWithInitialSolutionForReaderTest.xml");
 		VehicleRoutingProblem vrp = builder.build();
@@ -884,7 +949,7 @@ public class VrpXMLWriterTest {
 	}
 	
 	@Test
-	public void whenReadingInitialRoute_nuActivitiesShouldBeCorrect(){ 
+	public void whenReadWriteInitialRoute_nuActivitiesShouldBeCorrect(){
 		VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
 		new VrpXMLReader(builder, null).read("src/test/resources/finiteVrpWithInitialSolutionForReaderTest.xml");
 		VehicleRoutingProblem vrp = builder.build();
