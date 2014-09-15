@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2013  Stefan Schroeder
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -122,11 +122,11 @@ class VehicleFleetManagerImpl implements VehicleFleetManager {
 		}
 		String typeId = v.getType().getTypeId();
 		if(v.getType() instanceof PenaltyVehicleType){
-			VehicleTypeKey typeKey = new VehicleTypeKey(typeId, v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getSkills());
+			VehicleTypeKey typeKey = new VehicleTypeKey(typeId, v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(),v.getMaxOperationTime() , v.getSkills());
 			penaltyVehicles.put(typeKey, v);
 		}
 		else{
-			VehicleTypeKey typeKey = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getSkills());
+			VehicleTypeKey typeKey = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getMaxOperationTime(), v.getSkills());
 			if(!typeMapOfAvailableVehicles.containsKey(typeKey)){
 				typeMapOfAvailableVehicles.put(typeKey, new TypeContainer());
 			}
@@ -137,7 +137,7 @@ class VehicleFleetManagerImpl implements VehicleFleetManager {
 	private void removeVehicle(Vehicle v){
 		//it might be better to introduce a class PenaltyVehicle
 		if(!(v.getType() instanceof PenaltyVehicleType)){
-			VehicleTypeKey key = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getSkills());
+			VehicleTypeKey key = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(), v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(),v.getMaxOperationTime() , v.getSkills());
 			if(typeMapOfAvailableVehicles.containsKey(key)){
 				typeMapOfAvailableVehicles.get(key).remove(v);
 			}
@@ -170,7 +170,7 @@ class VehicleFleetManagerImpl implements VehicleFleetManager {
 	@Override
 	public Collection<Vehicle> getAvailableVehicles(Vehicle withoutThisType) {
 		List<Vehicle> vehicles = new ArrayList<Vehicle>();
-		VehicleTypeKey thisKey = new VehicleTypeKey(withoutThisType.getType().getTypeId(), withoutThisType.getStartLocationId(), withoutThisType.getEndLocationId(), withoutThisType.getEarliestDeparture(), withoutThisType.getLatestArrival(), withoutThisType.getSkills());
+		VehicleTypeKey thisKey = new VehicleTypeKey(withoutThisType.getType().getTypeId(), withoutThisType.getStartLocationId(), withoutThisType.getEndLocationId(), withoutThisType.getEarliestDeparture(), withoutThisType.getLatestArrival(),withoutThisType.getMaxOperationTime() , withoutThisType.getSkills());
 		for(VehicleTypeKey key : typeMapOfAvailableVehicles.keySet()){
 			if(key.equals(thisKey)) continue;
 			if(!typeMapOfAvailableVehicles.get(key).isEmpty()){

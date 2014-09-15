@@ -322,6 +322,9 @@ public class VrpXMLWriter {
 			}
 			xmlConfig.setProperty(vehiclePathString + "("+counter+").timeSchedule.start", vehicle.getEarliestDeparture());
 			xmlConfig.setProperty(vehiclePathString + "("+counter+").timeSchedule.end", vehicle.getLatestArrival());
+            if(vehicle.getMaxOperationTime() != Double.MAX_VALUE) {
+                xmlConfig.setProperty(vehiclePathString + "(" + counter + ").timeSchedule.maxOperationTime", vehicle.getMaxOperationTime());
+            }
 
 			xmlConfig.setProperty(vehiclePathString + "("+counter+").returnToDepot", vehicle.isReturnToDepot());
 
@@ -350,6 +353,8 @@ public class VrpXMLWriter {
 			xmlConfig.setProperty(typePathString + "("+typeCounter+").costs.fixed", type.getVehicleCostParams().fix);
 			xmlConfig.setProperty(typePathString + "("+typeCounter+").costs.distance", type.getVehicleCostParams().perDistanceUnit);
 			xmlConfig.setProperty(typePathString + "("+typeCounter+").costs.time", type.getVehicleCostParams().perTimeUnit);
+            xmlConfig.setProperty(typePathString + "("+typeCounter+").costs.waitingTime", type.getVehicleCostParams().getWaitingTimeParameter());
+            xmlConfig.setProperty(typePathString + "("+typeCounter+").costs.serviceTime", type.getVehicleCostParams().getServiceTimeParameter());
 			typeCounter++;
 		}
 

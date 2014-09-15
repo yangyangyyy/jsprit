@@ -34,15 +34,17 @@ public class VehicleTypeKey extends AbstractVehicle.AbstractTypeKey{
 	public final String endLocationId;
 	public final double earliestStart;
 	public final double latestEnd;
+    public final double maxOperationTime;
     public final Skills skills;
 	
-	public VehicleTypeKey(String typeId, String startLocationId, String endLocationId, double earliestStart, double latestEnd, Skills skills) {
+	public VehicleTypeKey(String typeId, String startLocationId, String endLocationId, double earliestStart, double latestEnd, double maxOperationTime, Skills skills) {
 		super();
 		this.type = typeId;
 		this.startLocationId = startLocationId;
 		this.endLocationId = endLocationId;
 		this.earliestStart = earliestStart;
 		this.latestEnd = latestEnd;
+        this.maxOperationTime = maxOperationTime;
         this.skills = skills;
 	}
 
@@ -55,6 +57,7 @@ public class VehicleTypeKey extends AbstractVehicle.AbstractTypeKey{
 
         if (Double.compare(that.earliestStart, earliestStart) != 0) return false;
         if (Double.compare(that.latestEnd, latestEnd) != 0) return false;
+        if (Double.compare(that.maxOperationTime, maxOperationTime) != 0) return false;
         if (!endLocationId.equals(that.endLocationId)) return false;
         if (!skills.equals(that.skills)) return false;
         if (!startLocationId.equals(that.startLocationId)) return false;
@@ -73,6 +76,8 @@ public class VehicleTypeKey extends AbstractVehicle.AbstractTypeKey{
         temp = Double.doubleToLongBits(earliestStart);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(latestEnd);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(maxOperationTime);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + skills.hashCode();
         return result;

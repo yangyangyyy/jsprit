@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2013  Stefan Schroeder
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -44,7 +44,7 @@ class InfiniteVehicles implements VehicleFleetManager{
 
 	private void extractTypes(Collection<Vehicle> vehicles) {
 		for(Vehicle v : vehicles){
-			VehicleTypeKey typeKey = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(),v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getSkills());
+			VehicleTypeKey typeKey = new VehicleTypeKey(v.getType().getTypeId(), v.getStartLocationId(),v.getEndLocationId(), v.getEarliestDeparture(), v.getLatestArrival(), v.getMaxOperationTime() , v.getSkills());
 			types.put(typeKey,v);
 			sortedTypes.add(typeKey);
 
@@ -81,7 +81,7 @@ class InfiniteVehicles implements VehicleFleetManager{
 	@Override
 	public Collection<Vehicle> getAvailableVehicles(Vehicle withoutThisType) {
 		Collection<Vehicle> vehicles = new ArrayList<Vehicle>();
-		VehicleTypeKey thisKey = new VehicleTypeKey(withoutThisType.getType().getTypeId(), withoutThisType.getStartLocationId(), withoutThisType.getEndLocationId(), withoutThisType.getEarliestDeparture(), withoutThisType.getLatestArrival(), withoutThisType.getSkills());
+		VehicleTypeKey thisKey = new VehicleTypeKey(withoutThisType.getType().getTypeId(), withoutThisType.getStartLocationId(), withoutThisType.getEndLocationId(), withoutThisType.getEarliestDeparture(), withoutThisType.getLatestArrival(), withoutThisType.getMaxOperationTime(), withoutThisType.getSkills());
 		for(VehicleTypeKey key : types.keySet()){
 			if(!key.equals(thisKey)){
 				vehicles.add(types.get(key));

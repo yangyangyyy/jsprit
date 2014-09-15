@@ -561,10 +561,14 @@ public class VrpXMLReader{
 			Double fix = typeConfig.getDouble("costs.fixed");
 			Double timeC = typeConfig.getDouble("costs.time");
 			Double distC = typeConfig.getDouble("costs.distance");
+            String waitingTime = typeConfig.getString("costs.waitingTime");
+            String serviceTime = typeConfig.getString("costs.serviceTime");
 			
 			if(fix != null) typeBuilder.setFixedCost(fix);
 			if(timeC != null) typeBuilder.setCostPerTime(timeC);
 			if(distC != null) typeBuilder.setCostPerDistance(distC);
+            if(waitingTime != null) typeBuilder.setWaitingTimeParameter(Double.parseDouble(waitingTime));
+            if(serviceTime != null) typeBuilder.setServiceTimeParameter(Double.parseDouble(serviceTime));
 			VehicleType type = typeBuilder.build();
 			String id = type.getTypeId();
 			String penalty = typeConfig.getString("[@type]");
@@ -645,8 +649,10 @@ public class VrpXMLReader{
 			//read timeSchedule
 			String start = vehicleConfig.getString("timeSchedule.start");
 			String end = vehicleConfig.getString("timeSchedule.end");
+            String maxOperationTime = vehicleConfig.getString("timeSchedule.maxOperationTime");
 			if(start != null) builder.setEarliestStart(Double.parseDouble(start));
 			if(end != null) builder.setLatestArrival(Double.parseDouble(end));
+            if(maxOperationTime != null) builder.setMaxOperationTime(Double.parseDouble(maxOperationTime));
 
 			//read return2depot
             String returnToDepot = vehicleConfig.getString("returnToDepot");

@@ -37,7 +37,52 @@ public class VehicleTypeImpl implements VehicleType {
 	 */
 	public static class VehicleCostParams {
 
+        static class Builder {
 
+            public static Builder newInstance(){ return new Builder(); }
+
+            private Builder(){}
+
+            private double fixedCostsParameter;
+
+            private double transportDistanceParameter;
+
+            private double transportTimeParameter;
+
+            private double waitingTimeParameter;
+
+            private double serviceTimeParameter;
+
+            public Builder setFixedCostsParameter(double fixedCostsParameter){
+                this.fixedCostsParameter = fixedCostsParameter;
+                return this;
+            }
+
+            public Builder setTransportDistanceParameter(double transportDistanceParameter) {
+                this.transportDistanceParameter = transportDistanceParameter;
+                return this;
+            }
+
+            public Builder setTransportTimeParameter(double transportTimeParameter){
+                this.transportTimeParameter = transportTimeParameter;
+                return this;
+            }
+
+            public Builder setWaitingParameter(double waitingTimeParameter){
+                this.waitingTimeParameter = waitingTimeParameter;
+                return this;
+            }
+
+            public Builder setServiceTimeParameter(double serviceTimeParameter){
+                this.serviceTimeParameter = serviceTimeParameter;
+                return this;
+            }
+
+            public VehicleCostParams build(){
+                return new VehicleCostParams(this);
+            }
+
+        }
 
         public static VehicleTypeImpl.VehicleCostParams newInstance(double fix, double perTimeUnit,double perDistanceUnit){
 			return new VehicleCostParams(fix, perTimeUnit, perDistanceUnit);
@@ -59,6 +104,14 @@ public class VehicleTypeImpl implements VehicleType {
 			this.perTimeUnit = perTimeUnit;
 			this.perDistanceUnit = perDistanceUnit;
 		}
+
+        private VehicleCostParams(Builder builder){
+            fix = builder.fixedCostsParameter;
+            perTimeUnit = builder.transportTimeParameter;
+            perDistanceUnit = builder.transportDistanceParameter;
+            waitingTimeParameter = builder.waitingTimeParameter;
+            serviceTimeParameter = builder.serviceTimeParameter;
+        }
 		
 		@Override
 		public String toString() {
@@ -90,43 +143,36 @@ public class VehicleTypeImpl implements VehicleType {
 	 */
 	public static class Builder{
 
-
-
         public static VehicleTypeImpl.Builder newInstance(String id) {
 			if(id==null) throw new IllegalStateException();
 			return new Builder(id);
 		}
 		
 		private String id;
-		private int capacity = 0;
-		private double maxVelo = Double.MAX_VALUE;
-		/**
-		 * default cost values for default vehicle type
-		 */
-		private double fixedCost = 0.0;
 
-		private double perDistance = 1.0;
+//        private int capacity = 0;
 
-		private double perTime = 0.0;
-		
+        private double maxVelo = Double.MAX_VALUE;
+
 		private Capacity.Builder capacityBuilder = Capacity.Builder.newInstance();
 		
 		private Capacity capacityDimensions = null;
 		
 		private boolean dimensionAdded = false;
 
-        private double waitingTimeParameter = 0.;
+        private VehicleCostParams.Builder costParameterBuilder = VehicleCostParams.Builder.newInstance();
 
-        private double serviceTimeParameter = 0.;
+        private VehicleCostParams costParameter;
 
 		private Builder(String id) {
-			this.id = id;
+            this.id = id;
+            costParameterBuilder.setTransportDistanceParameter(1.);
 		}
 
 		/**
 		 * Sets the maximum velocity this vehicle-type can go [in meter per seconds].
 		 * 
-		 * @param inMeterPerSeconds
+		 * @param inMeterPerSeconds meter / second
 		 * @return this builder
 		 * @throws IllegalStateException if velocity is smaller than zero
 		 */
@@ -140,13 +186,14 @@ public class VehicleTypeImpl implements VehicleType {
 		 * 
 		 * <p>by default it is 0.
 		 * 
-		 * @param fixedCost
+		 * @param fixedCost fixed costs
 		 * @return this builder
 		 * @throws IllegalStateException if fixedCost is smaller than zero
 		 */
 		public VehicleTypeImpl.Builder setFixedCost(double fixedCost) { 
 			if(fixedCost < 0.0) throw new IllegalStateException("fixed costs cannot be smaller than zero");
-			this.fixedCost = fixedCost; 
+			costParameterBuilder.setFixedCostsParameter(fixedCost);
+//            this.fixedCost = fixedCost;
 			return this; 
 		}
 
@@ -155,13 +202,14 @@ public class VehicleTypeImpl implements VehicleType {
 		 * 
 		 * <p>by default it is 1.0
 		 * 
-		 * @param perDistance
+		 * @param perDistance distance costs
 		 * @return this builder
 		 * @throws IllegalStateException if perDistance is smaller than zero
 		 */
 		public VehicleTypeImpl.Builder setCostPerDistance(double perDistance){ 
 			if(perDistance < 0.0) throw new IllegalStateException("cost per distance must not be smaller than zero");
-			this.perDistance = perDistance; 
+			costParameterBuilder.setTransportDistanceParameter(perDistance);
+//            this.perDistance = perDistance;
 			return this; 
 		}
 
@@ -170,13 +218,13 @@ public class VehicleTypeImpl implements VehicleType {
 		 * 
 		 * <p>by default it is 0.0 
 		 * 
-		 * @param perTime
+		 * @param perTime time costs
 		 * @return this builder
 		 * @throws IllegalStateException if costPerTime is smaller than zero
 		 */
 		public VehicleTypeImpl.Builder setCostPerTime(double perTime){ 
 			if(perTime < 0.0) throw new IllegalStateException();
-			this.perTime = perTime; 
+			costParameterBuilder.setTransportTimeParameter(perTime);
 			return this; 
 		}
 		
@@ -189,14 +237,15 @@ public class VehicleTypeImpl implements VehicleType {
 			if(capacityDimensions == null){
 				capacityDimensions = capacityBuilder.build();
 			}
+            costParameter = costParameterBuilder.build();
 			return new VehicleTypeImpl(this);
 		}
 
 		/**
 		 * Adds a capacity dimension.
 		 * 
-		 * @param dimIndex
-		 * @param dimVal
+		 * @param dimIndex dimension index
+		 * @param dimVal dimension value
 		 * @return the builder
 		 * @throws IllegalArgumentException if dimVal < 0
 		 * @throws IllegalStateException if capacity dimension is already set
@@ -218,7 +267,7 @@ public class VehicleTypeImpl implements VehicleType {
 		 * your dimensions with <code>addCapacityDimension(int dimIndex, int dimVal)</code> or set the already built dimensions with
 		 * this method.
 		 * 
-		 * @param capacity
+		 * @param capacity capacity
 		 * @return this builder
 		 * @throws IllegalStateException if capacityDimension has already been added
 		 */
@@ -230,24 +279,53 @@ public class VehicleTypeImpl implements VehicleType {
 			return this;
 		}
 
+        /**
+         * Sets parameter for waiting time.
+         *
+         * @param waitingTimeParameter waiting time parameter
+         * @return the builder
+         * @throws java.lang.IllegalStateException if waitingTimeParameter < 0.
+         */
         public Builder setWaitingTimeParameter(double waitingTimeParameter) {
-            this.waitingTimeParameter = waitingTimeParameter;
+            if(waitingTimeParameter < 0.0) throw new IllegalStateException();
+            costParameterBuilder.setWaitingParameter(waitingTimeParameter);
             return this;
         }
 
+        /**
+         * Sets transportDistanceParameter.
+         * @param transportDistanceParameter transport distance parameter
+         * @return the builder
+         * @throws java.lang.IllegalStateException if transportDistanceParameter < 0.
+         */
         public Builder setTransportDistanceParameter(double transportDistanceParameter) {
-            this.perDistance = transportDistanceParameter;
+            if(transportDistanceParameter < 0.0) throw new IllegalStateException();
+            costParameterBuilder.setTransportDistanceParameter(transportDistanceParameter);
             return this;
         }
 
-
+        /**
+         * Sets transportTimeParameter.
+         * @param transportTimeParameter transport time parameter
+         * @return the builder
+         * @throws java.lang.IllegalStateException if transportTimeParameter < 0.
+         */
         public Builder setTransportTimeParameter(double transportTimeParameter) {
-            this.perTime = transportTimeParameter;
+            if(transportTimeParameter < 0.0) throw new IllegalStateException();
+            costParameterBuilder.setTransportTimeParameter(transportTimeParameter);
             return this;
         }
 
+        /**
+         * Sets serviceTimeParameter.
+         *
+         * @param serviceTimeParameter serviceTimeParameter
+         * @return the builder
+         * @throws java.lang.IllegalStateException if serviceTimeParameter < 0.
+         */
         public Builder setServiceTimeParameter(double serviceTimeParameter) {
-            this.serviceTimeParameter = serviceTimeParameter;
+            if(serviceTimeParameter < 0.0) throw new IllegalStateException();
+            costParameterBuilder.setServiceTimeParameter(serviceTimeParameter);
             return this;
         }
     }
@@ -282,25 +360,17 @@ public class VehicleTypeImpl implements VehicleType {
 	}
 
 	private final String typeId;
-	
-	private final int capacity;
-	
+
 	private final VehicleTypeImpl.VehicleCostParams vehicleCostParams;
 	
 	private final Capacity capacityDimensions;
 
 	private final double maxVelocity;
-	
-	/**
-	 * priv constructor constructing vehicle-type
-	 * 
-	 * @param builder
-	 */
+
 	private VehicleTypeImpl(VehicleTypeImpl.Builder builder){
 		typeId = builder.id;
-		capacity = builder.capacity;
 		maxVelocity = builder.maxVelo;
-		vehicleCostParams = new VehicleCostParams(builder.fixedCost, builder.perTime, builder.perDistance);
+		vehicleCostParams = builder.costParameter;
 		capacityDimensions = builder.capacityDimensions;
 	}
 
@@ -322,7 +392,7 @@ public class VehicleTypeImpl implements VehicleType {
 
 	@Override
 	public String toString() {
-		return "[typeId="+typeId+"][capacity="+capacity+"]" + vehicleCostParams;
+		return "[typeId="+typeId+"][capacity="+capacityDimensions+"][costParameter=" + vehicleCostParams + "]";
 	}
 
 	@Override

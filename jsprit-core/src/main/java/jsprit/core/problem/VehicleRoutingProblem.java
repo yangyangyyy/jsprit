@@ -435,7 +435,7 @@ public class VehicleRoutingProblem {
 			Set<VehicleTypeKey> vehicleTypeKeys = new HashSet<VehicleTypeKey>();
 			List<Vehicle> uniqueVehicles = new ArrayList<Vehicle>();
 			for(Vehicle v : this.uniqueVehicles){
-				VehicleTypeKey key = new VehicleTypeKey(v.getType().getTypeId(),v.getStartLocationId(),v.getEndLocationId(),v.getEarliestDeparture(),v.getLatestArrival(), v.getSkills());
+				VehicleTypeKey key = new VehicleTypeKey(v.getType().getTypeId(),v.getStartLocationId(),v.getEndLocationId(),v.getEarliestDeparture(),v.getLatestArrival(),v.getMaxOperationTime(), v.getSkills());
 				if(!vehicleTypeKeys.contains(key)){
 					uniqueVehicles.add(v);
 					vehicleTypeKeys.add(key);

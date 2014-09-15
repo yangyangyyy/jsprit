@@ -310,7 +310,7 @@ public class VehicleImpl extends AbstractVehicle{
 		endLocationCoord = builder.endLocationCoord;
         skills = builder.skills;
         maxOperationTime = builder.maxOperationTime;
-        setVehicleIdentifier(new VehicleTypeKey(type.getTypeId(),startLocationId,endLocationId,earliestDeparture,latestArrival,skills));
+        setVehicleIdentifier(new VehicleTypeKey(type.getTypeId(),startLocationId,endLocationId,earliestDeparture,latestArrival,maxOperationTime,skills));
 	}
 	
 	/**

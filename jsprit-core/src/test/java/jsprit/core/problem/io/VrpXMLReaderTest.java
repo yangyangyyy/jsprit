@@ -633,7 +633,7 @@ public class VrpXMLReaderTest {
     @Test
     public void shouldReadMaxOperationTimeOfVehicle1(){
         VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
-        new VrpXMLReader(builder, null).read(inFileName);
+        new VrpXMLReader(builder).read(inFileName);
         VehicleRoutingProblem vrp = builder.build();
         Vehicle v = getVehicle("v1",vrp.getVehicles());
         assertEquals(500.,v.getMaxOperationTime(),0.01);
@@ -689,7 +689,7 @@ public class VrpXMLReaderTest {
         VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
         new VrpXMLReader(builder, null).read(inFileName);
         VehicleRoutingProblem vrp = builder.build();
-        Vehicle v = getVehicle("v1",vrp.getVehicles());
+        Vehicle v = getVehicle("v2",vrp.getVehicles());
         assertEquals(0.,v.getType().getVehicleCostParams().getServiceTimeParameter(),0.01);
     }
 
