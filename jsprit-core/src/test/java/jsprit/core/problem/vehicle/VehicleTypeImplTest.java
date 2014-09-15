@@ -1,26 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2014 Stefan Schroeder.
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Contributors:
- *     Stefan Schroeder - initial API and implementation
  ******************************************************************************/
 package jsprit.core.problem.vehicle;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class VehicleTypeImplTest {
 
@@ -153,6 +151,29 @@ public class VehicleTypeImplTest {
 		PenaltyVehicleType penType = new PenaltyVehicleType(type2);
 		assertTrue(!type.equals(penType));
 	}
-	
+
+    @Test
+    public void itShouldSetWaitingTimeParameter(){
+        VehicleTypeImpl type = VehicleTypeImpl.Builder.newInstance("type").setWaitingTimeParameter(1.).build();
+        assertEquals(1.,type.getVehicleCostParams().getWaitingTimeParameter(),0.01);
+    }
+
+    @Test
+    public void itShouldSetTransportDistanceParameter(){
+        VehicleTypeImpl type = VehicleTypeImpl.Builder.newInstance("type").setTransportDistanceParameter(1.).build();
+        assertEquals(1.,type.getVehicleCostParams().getTransportDistanceParameter(),0.01);
+    }
+
+    @Test
+    public void itShouldSetTransportTimeParameter(){
+        VehicleTypeImpl type = VehicleTypeImpl.Builder.newInstance("type").setTransportTimeParameter(1.).build();
+        assertEquals(1.,type.getVehicleCostParams().getTransportTimeParameter(),0.01);
+    }
+
+    @Test
+    public void itShouldSetServiceTimeParameter(){
+        VehicleTypeImpl type = VehicleTypeImpl.Builder.newInstance("type").setServiceTimeParameter(1.).build();
+        assertEquals(1.,type.getVehicleCostParams().getServiceTimeParameter(),0.01);
+    }
 
 }

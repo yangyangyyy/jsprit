@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2013  Stefan Schroeder
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
  */
 
 public class VehicleImpl extends AbstractVehicle{
+
 
 
 
@@ -89,6 +90,8 @@ public class VehicleImpl extends AbstractVehicle{
         private Skills.Builder skillBuilder = Skills.Builder.newInstance();
 
         private Skills skills;
+
+        public double maxOperationTime = Double.MAX_VALUE;
 
         private Builder(String id) {
 			super();
@@ -249,6 +252,11 @@ public class VehicleImpl extends AbstractVehicle{
             this.skillBuilder.addAllSkills(skills.values());
             return this;
         }
+
+        public Builder setMaxOperationTime(double maxOperationTime) {
+            this.maxOperationTime = maxOperationTime;
+            return this;
+        }
     }
 
 	/**
@@ -284,7 +292,9 @@ public class VehicleImpl extends AbstractVehicle{
 
 	private final String startLocationId;
 
-    private Skills skills;
+    private final Skills skills;
+
+    private final double maxOperationTime;
 
 	private VehicleImpl(Builder builder){
 		id = builder.id;
@@ -299,6 +309,7 @@ public class VehicleImpl extends AbstractVehicle{
 		endLocationId = builder.endLocationId;
 		endLocationCoord = builder.endLocationCoord;
         skills = builder.skills;
+        maxOperationTime = builder.maxOperationTime;
         setVehicleIdentifier(new VehicleTypeKey(type.getTypeId(),startLocationId,endLocationId,earliestDeparture,latestArrival,skills));
 	}
 	
@@ -322,7 +333,10 @@ public class VehicleImpl extends AbstractVehicle{
 		return latestArrival;
 	}
 
-	@Override
+    @Override
+    public double getMaxOperationTime() { return maxOperationTime; }
+
+    @Override
 	public VehicleType getType() {
 		return type;
 	}

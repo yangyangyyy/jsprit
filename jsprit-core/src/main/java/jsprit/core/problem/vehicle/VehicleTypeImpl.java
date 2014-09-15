@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (C) 2013  Stefan Schroeder
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public 
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -36,14 +36,22 @@ public class VehicleTypeImpl implements VehicleType {
 	 *
 	 */
 	public static class VehicleCostParams {
-		
-		public static VehicleTypeImpl.VehicleCostParams newInstance(double fix, double perTimeUnit,double perDistanceUnit){
+
+
+
+        public static VehicleTypeImpl.VehicleCostParams newInstance(double fix, double perTimeUnit,double perDistanceUnit){
 			return new VehicleCostParams(fix, perTimeUnit, perDistanceUnit);
 		}
 	
 		public final double fix;
+
 		public final double perTimeUnit;
+
 		public final double perDistanceUnit;
+
+        public double waitingTimeParameter = 0.;
+
+        private double serviceTimeParameter = 0.;
 
 		private VehicleCostParams(double fix, double perTimeUnit,double perDistanceUnit) {
 			super();
@@ -56,7 +64,23 @@ public class VehicleTypeImpl implements VehicleType {
 		public String toString() {
 			return "[fixed="+fix+"][perTime="+perTimeUnit+"][perDistance="+perDistanceUnit+"]";
 		}
-	}
+
+        public double getWaitingTimeParameter() {
+            return waitingTimeParameter;
+        }
+
+        public double getTransportDistanceParameter() {
+            return perDistanceUnit;
+        }
+
+        public double getTransportTimeParameter() {
+            return perTimeUnit;
+        }
+
+        public double getServiceTimeParameter() {
+            return serviceTimeParameter;
+        }
+    }
 
 	/**
 	 * Builder that builds the vehicle-type.
@@ -65,8 +89,10 @@ public class VehicleTypeImpl implements VehicleType {
 	 *
 	 */
 	public static class Builder{
-		
-		public static VehicleTypeImpl.Builder newInstance(String id) {
+
+
+
+        public static VehicleTypeImpl.Builder newInstance(String id) {
 			if(id==null) throw new IllegalStateException();
 			return new Builder(id);
 		}
@@ -78,7 +104,9 @@ public class VehicleTypeImpl implements VehicleType {
 		 * default cost values for default vehicle type
 		 */
 		private double fixedCost = 0.0;
+
 		private double perDistance = 1.0;
+
 		private double perTime = 0.0;
 		
 		private Capacity.Builder capacityBuilder = Capacity.Builder.newInstance();
@@ -86,6 +114,10 @@ public class VehicleTypeImpl implements VehicleType {
 		private Capacity capacityDimensions = null;
 		
 		private boolean dimensionAdded = false;
+
+        private double waitingTimeParameter = 0.;
+
+        private double serviceTimeParameter = 0.;
 
 		private Builder(String id) {
 			this.id = id;
@@ -197,7 +229,28 @@ public class VehicleTypeImpl implements VehicleType {
 			this.capacityDimensions = capacity;
 			return this;
 		}
-	}
+
+        public Builder setWaitingTimeParameter(double waitingTimeParameter) {
+            this.waitingTimeParameter = waitingTimeParameter;
+            return this;
+        }
+
+        public Builder setTransportDistanceParameter(double transportDistanceParameter) {
+            this.perDistance = transportDistanceParameter;
+            return this;
+        }
+
+
+        public Builder setTransportTimeParameter(double transportTimeParameter) {
+            this.perTime = transportTimeParameter;
+            return this;
+        }
+
+        public Builder setServiceTimeParameter(double serviceTimeParameter) {
+            this.serviceTimeParameter = serviceTimeParameter;
+            return this;
+        }
+    }
 	
 	@Override
 	public int hashCode() {

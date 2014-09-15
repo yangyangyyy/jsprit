@@ -1,20 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2014 Stefan Schroeder.
- * 
+ * Copyright (C) 2014  Stefan Schroeder
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either 
+ * License as published by the Free Software Foundation; either
  * version 3.0 of the License, or (at your option) any later version.
- *  
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Contributors:
- *     Stefan Schroeder - initial API and implementation
  ******************************************************************************/
 package jsprit.core.algorithm;
 
@@ -54,8 +52,10 @@ public class VehicleRoutingAlgorithmBuilder {
 	private ConstraintManager constraintManager;
 
 	private int nuOfThreads=0;
-	
-	/**
+
+    private boolean optimizeStartTimes = false;
+
+    /**
 	 * Constructs the builder with the problem and an algorithmConfigFile. Latter is to configure and specify the ruin-and-recreate meta-heuristic.
 	 * 
 	 * @param problem to solve
@@ -148,6 +148,18 @@ public class VehicleRoutingAlgorithmBuilder {
 	public void setNuOfThreads(int nuOfThreads){
 		this.nuOfThreads=nuOfThreads;
 	}
+
+    /**
+     * Sets flag whether to optimize vehicle start times or not.
+     *
+     * <p>default value is false, i.e. start times will not be optimized.
+     * @param optimizeStartTimes true if start times should be optimized, otherwise false
+     */
+    public void setOptimizeStartTimes(boolean optimizeStartTimes){
+        this.optimizeStartTimes = optimizeStartTimes;
+    }
+
+
 
 	/**
 	 * Builds and returns the algorithm.
