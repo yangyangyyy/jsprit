@@ -630,11 +630,68 @@ public class VrpXMLReaderTest {
         assertEquals("4",solution.getUnassignedJobs().iterator().next().getId());
     }
 
-//    @Test
-//    public void solutionListShouldBeEmpty(){
-//        VehicleRoutingProblem.Builder vrpBuilder = VehicleRoutingProblem.Builder.newInstance();
-//        ArrayList<VehicleRoutingProblemSolution> solutions = new ArrayList<VehicleRoutingProblemSolution>();
-//        new VrpXMLReader(vrpBuilder, solutions).read("src/test/resources/finiteVrpforReaderTest.xml");
-//        assertTrue(solutions.isEmpty());
-//    }
+    @Test
+    public void shouldReadMaxOperationTimeOfVehicle1(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v1",vrp.getVehicles());
+        assertEquals(500.,v.getMaxOperationTime(),0.01);
+    }
+
+    @Test
+    public void shouldReadMaxOperationTimeOfVehicle2(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v2",vrp.getVehicles());
+        assertEquals(600.,v.getMaxOperationTime(),0.01);
+    }
+
+    @Test
+    public void shouldReadMaxOperationTimeOfVehicle3(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v3",vrp.getVehicles());
+        assertEquals(Double.MAX_VALUE,v.getMaxOperationTime(),0.01);
+    }
+
+    @Test
+    public void shouldReadWaitingTimeParameterOfType1(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v1",vrp.getVehicles());
+        assertEquals(2.,v.getType().getVehicleCostParams().getWaitingTimeParameter(),0.01);
+    }
+
+    @Test
+    public void shouldReadServiceTimeParameterOfType1(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v1",vrp.getVehicles());
+        assertEquals(1.,v.getType().getVehicleCostParams().getServiceTimeParameter(),0.01);
+    }
+
+    @Test
+    public void shouldReadWaitingTimeParameterOfType2(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v2",vrp.getVehicles());
+        assertEquals(5.,v.getType().getVehicleCostParams().getWaitingTimeParameter(),0.01);
+    }
+
+    @Test
+    public void shouldReadServiceTimeParameterOfType2(){
+        VehicleRoutingProblem.Builder builder = VehicleRoutingProblem.Builder.newInstance();
+        new VrpXMLReader(builder, null).read(inFileName);
+        VehicleRoutingProblem vrp = builder.build();
+        Vehicle v = getVehicle("v1",vrp.getVehicles());
+        assertEquals(0.,v.getType().getVehicleCostParams().getServiceTimeParameter(),0.01);
+    }
+
+
 }

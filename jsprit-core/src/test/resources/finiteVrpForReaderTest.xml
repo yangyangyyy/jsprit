@@ -36,6 +36,7 @@
                 <timeSchedule>
                     <start>0.0</start>
                     <end>1000.0</end>
+                    <maxOperationTime>500.</maxOperationTime>
                </timeSchedule>
               <skills>skill1; SKill2</skills>
           </vehicle>
@@ -50,6 +51,7 @@
                <timeSchedule>
                     <start>0.0</start>
                     <end>1000.0</end>
+                   <maxOperationTime>600.</maxOperationTime>
                </timeSchedule>
           </vehicle>
           <vehicle>
@@ -111,6 +113,8 @@
                     <fixed>0.0</fixed>
                     <distance>0.0</distance>
                     <time>0.0</time>
+                   <waitingTime>2.</waitingTime>
+                   <serviceTime>1.</serviceTime>
                </costs>
           </type>
           <type>
@@ -120,6 +124,7 @@
                     <fixed>0.0</fixed>
                     <distance>0.0</distance>
                     <time>0.0</time>
+                   <waitingTime>5.</waitingTime>
                </costs>
           </type>
           <type>
