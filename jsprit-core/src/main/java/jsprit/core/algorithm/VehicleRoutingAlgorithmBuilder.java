@@ -19,10 +19,7 @@ package jsprit.core.algorithm;
 import jsprit.core.algorithm.io.AlgorithmConfig;
 import jsprit.core.algorithm.io.AlgorithmConfigXmlReader;
 import jsprit.core.algorithm.io.VehicleRoutingAlgorithms;
-import jsprit.core.algorithm.state.StateManager;
-import jsprit.core.algorithm.state.UpdateActivityTimes;
-import jsprit.core.algorithm.state.UpdateEndLocationIfRouteIsOpen;
-import jsprit.core.algorithm.state.UpdateVariableCosts;
+import jsprit.core.algorithm.state.*;
 import jsprit.core.problem.VehicleRoutingProblem;
 import jsprit.core.problem.constraint.ConstraintManager;
 import jsprit.core.problem.solution.SolutionCostCalculator;
@@ -55,6 +52,8 @@ public class VehicleRoutingAlgorithmBuilder {
 
     private boolean optimizeStartTimes = false;
 
+    private ActivityTimeScheduler activityTimeScheduler;
+
     /**
 	 * Constructs the builder with the problem and an algorithmConfigFile. Latter is to configure and specify the ruin-and-recreate meta-heuristic.
 	 * 
@@ -65,6 +64,7 @@ public class VehicleRoutingAlgorithmBuilder {
 		this.vrp=problem;
 		this.algorithmConfigFile=algorithmConfig;
 		this.algorithmConfig=null;
+        activityTimeScheduler = new UpdateActivityTimes(vrp.getTransportCosts());
 	}
 	
 	/**
@@ -159,6 +159,8 @@ public class VehicleRoutingAlgorithmBuilder {
         this.optimizeStartTimes = optimizeStartTimes;
     }
 
+    public void setActivityTimeScheduler(ActivityTimeScheduler activityTimeScheduler){ this.activityTimeScheduler = activityTimeScheduler; }
+
 
 
 	/**
@@ -174,7 +176,7 @@ public class VehicleRoutingAlgorithmBuilder {
 		//add core updater
 		stateManager.addStateUpdater(new UpdateEndLocationIfRouteIsOpen());
 //		stateManager.addStateUpdater(new OpenRouteStateVerifier());
-		stateManager.addStateUpdater(new UpdateActivityTimes(vrp.getTransportCosts()));
+		stateManager.addStateUpdater(activityTimeScheduler);
 		stateManager.addStateUpdater(new UpdateVariableCosts(vrp.getActivityCosts(), vrp.getTransportCosts(), stateManager));
 		if(addCoreConstraints){
 			constraintManager.addLoadConstraint();

@@ -16,8 +16,9 @@
  ******************************************************************************/
 package jsprit.core.algorithm.state;
 
-import jsprit.core.problem.cost.ForwardTransportTime;
+import jsprit.core.problem.cost.TransportTime;
 import jsprit.core.problem.solution.route.VehicleRoute;
+import jsprit.core.problem.solution.route.activity.ActivityVisitor;
 import jsprit.core.problem.solution.route.activity.TourActivity;
 import jsprit.core.util.ActivityTimeTracker;
 
@@ -30,37 +31,46 @@ import jsprit.core.util.ActivityTimeTracker;
  * @author stefan
  *
  */
-public class UpdateActivityTimes implements ActivityTimeScheduler{
+class ActivityTimeSchedulingConsideringStartTimeOptimization implements ActivityVisitor, StateUpdater{
 
 	private ActivityTimeTracker timeTracker;
-	
+
 	private VehicleRoute route;
-	
+
+    private TransportTime transportTime;
+
 	/**
-	 * Updates arrival and end times of activities. 
-	 * 
+	 * Updates arrival and end times of activities.
+	 *
 	 * <p>Note that this modifies arrTime and endTime of each activity in a route.
-	 * 
+	 *
 	 * <p>ArrTimes and EndTimes can be retrieved by <br>
 	 * <code>activity.getArrTime()</code> and
 	 * <code>activity.getEndTime()</code>
-	 * 
+	 *
 	 * @author stefan
 	 *
 	 */
-	public UpdateActivityTimes(ForwardTransportTime transportTime) {
-		super();
-		timeTracker = new ActivityTimeTracker(transportTime);
+	ActivityTimeSchedulingConsideringStartTimeOptimization(TransportTime transportTime) {
+		this.transportTime = transportTime;
+//		timeTracker = new ActivityTimeTracker(transportTime);
 	}
+
 
 	@Override
 	public void begin(VehicleRoute route) {
+        double startTime = optimizeStartTime(route);
+        route.getStart().setEndTime(startTime);
 		timeTracker.begin(route);
 		this.route = route;
 		route.getStart().setEndTime(timeTracker.getActEndTime());
 	}
 
-	@Override
+    private double optimizeStartTime(VehicleRoute route) {
+        return 0;
+    }
+
+    @Override
 	public void visit(TourActivity activity) {
 		timeTracker.visit(activity);
 		activity.setArrTime(timeTracker.getActArrTime());

@@ -59,12 +59,9 @@ public class ActivityTimeTracker implements ActivityVisitor{
 	public void begin(VehicleRoute route) {
 		prevAct = route.getStart(); 
 		startAtPrevAct = prevAct.getEndTime();
-		
-		actEndTime = startAtPrevAct;
-		
-		this.route = route;
-		
-		beginFirst = true;
+        actEndTime = startAtPrevAct;
+        this.route = route;
+        beginFirst = true;
 	}
 
 	@Override
