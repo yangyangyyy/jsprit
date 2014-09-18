@@ -175,5 +175,8 @@ public class VehicleRoutingAlgorithmBuilder {
 		return VehicleRoutingAlgorithms.readAndCreateAlgorithm(vrp, algorithmConfig, nuOfThreads, solutionCostCalculator, stateManager, constraintManager, addDefaultCostCalculators);
 	}
 
-	
+
+    public void setOptimizeStartTimes(boolean optimizeStartTimes) {
+
+    }
 }
