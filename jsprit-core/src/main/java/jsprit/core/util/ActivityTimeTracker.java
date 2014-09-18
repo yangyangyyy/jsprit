@@ -17,12 +17,17 @@
 package jsprit.core.util;
 
 import jsprit.core.problem.cost.ForwardTransportTime;
-import jsprit.core.problem.cost.TransportTime;
 import jsprit.core.problem.solution.route.VehicleRoute;
 import jsprit.core.problem.solution.route.activity.ActivityVisitor;
 import jsprit.core.problem.solution.route.activity.TourActivity;
 
 public class ActivityTimeTracker implements ActivityVisitor{
+
+    public static enum ActivityPolicy {
+
+        AS_SOON_AS_TIME_WINDOW_OPENS, AS_SOON_AS_ARRIVED
+
+    }
 
 	private ForwardTransportTime transportTime;
 	
@@ -37,14 +42,18 @@ public class ActivityTimeTracker implements ActivityVisitor{
 	private double actArrTime;
 	
 	private double actEndTime;
+
+    private ActivityPolicy activityPolicy = ActivityPolicy.AS_SOON_AS_TIME_WINDOW_OPENS;
 	
 	public ActivityTimeTracker(ForwardTransportTime transportTime) {
 		super();
 		this.transportTime = transportTime;
 	}
 
-    public ActivityTimeTracker(TransportTime transportTime){
+    public ActivityTimeTracker(ForwardTransportTime transportTime, ActivityPolicy activityPolicy) {
+        super();
         this.transportTime = transportTime;
+        this.activityPolicy = activityPolicy;
     }
 
 	public double getActArrTime(){
@@ -71,8 +80,16 @@ public class ActivityTimeTracker implements ActivityVisitor{
 		double arrivalTimeAtCurrAct = startAtPrevAct + transportTime; 
 		
 		actArrTime = arrivalTimeAtCurrAct;
-		
-		double operationStartTime = Math.max(activity.getTheoreticalEarliestOperationStartTime(), arrivalTimeAtCurrAct);
+        double operationStartTime;
+
+        if(activityPolicy.equals(ActivityPolicy.AS_SOON_AS_TIME_WINDOW_OPENS)){
+            operationStartTime = Math.max(activity.getTheoreticalEarliestOperationStartTime(), arrivalTimeAtCurrAct);
+        }
+        else if(activityPolicy.equals(ActivityPolicy.AS_SOON_AS_ARRIVED)){
+            operationStartTime = actArrTime;
+        }
+		else operationStartTime = actArrTime;
+
 		double operationEndTime = operationStartTime + activity.getOperationTime();
 		
 		actEndTime = operationEndTime;

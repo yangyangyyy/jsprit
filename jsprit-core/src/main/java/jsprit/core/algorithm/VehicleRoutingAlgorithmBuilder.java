@@ -19,7 +19,8 @@ package jsprit.core.algorithm;
 import jsprit.core.algorithm.io.AlgorithmConfig;
 import jsprit.core.algorithm.io.AlgorithmConfigXmlReader;
 import jsprit.core.algorithm.io.VehicleRoutingAlgorithms;
-import jsprit.core.algorithm.state.*;
+import jsprit.core.algorithm.state.StateManager;
+import jsprit.core.algorithm.state.UpdateEndLocationIfRouteIsOpen;
 import jsprit.core.problem.VehicleRoutingProblem;
 import jsprit.core.problem.constraint.ConstraintManager;
 import jsprit.core.problem.solution.SolutionCostCalculator;
@@ -49,12 +50,8 @@ public class VehicleRoutingAlgorithmBuilder {
 	private ConstraintManager constraintManager;
 
 	private int nuOfThreads=0;
-
-    private boolean optimizeStartTimes = false;
-
-    private ActivityTimeScheduler activityTimeScheduler;
-
-    /**
+	
+	/**
 	 * Constructs the builder with the problem and an algorithmConfigFile. Latter is to configure and specify the ruin-and-recreate meta-heuristic.
 	 * 
 	 * @param problem to solve
@@ -64,7 +61,6 @@ public class VehicleRoutingAlgorithmBuilder {
 		this.vrp=problem;
 		this.algorithmConfigFile=algorithmConfig;
 		this.algorithmConfig=null;
-        activityTimeScheduler = new UpdateActivityTimes(vrp.getTransportCosts());
 	}
 	
 	/**
@@ -149,20 +145,6 @@ public class VehicleRoutingAlgorithmBuilder {
 		this.nuOfThreads=nuOfThreads;
 	}
 
-    /**
-     * Sets flag whether to optimize vehicle start times or not.
-     *
-     * <p>default value is false, i.e. start times will not be optimized.
-     * @param optimizeStartTimes true if start times should be optimized, otherwise false
-     */
-    public void setOptimizeStartTimes(boolean optimizeStartTimes){
-        this.optimizeStartTimes = optimizeStartTimes;
-    }
-
-    public void setActivityTimeScheduler(ActivityTimeScheduler activityTimeScheduler){ this.activityTimeScheduler = activityTimeScheduler; }
-
-
-
 	/**
 	 * Builds and returns the algorithm.
 	 * 
@@ -176,8 +158,7 @@ public class VehicleRoutingAlgorithmBuilder {
 		//add core updater
 		stateManager.addStateUpdater(new UpdateEndLocationIfRouteIsOpen());
 //		stateManager.addStateUpdater(new OpenRouteStateVerifier());
-		stateManager.addStateUpdater(activityTimeScheduler);
-		stateManager.addStateUpdater(new UpdateVariableCosts(vrp.getActivityCosts(), vrp.getTransportCosts(), stateManager));
+
 		if(addCoreConstraints){
 			constraintManager.addLoadConstraint();
 			constraintManager.addTimeWindowConstraint();

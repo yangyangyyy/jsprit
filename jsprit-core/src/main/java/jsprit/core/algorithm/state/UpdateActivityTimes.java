@@ -32,10 +32,12 @@ import jsprit.core.util.ActivityTimeTracker;
  */
 public class UpdateActivityTimes implements ActivityTimeScheduler{
 
-	private ActivityTimeTracker timeTracker;
+
+
+    private ActivityTimeTracker timeTracker;
 	
 	private VehicleRoute route;
-	
+
 	/**
 	 * Updates arrival and end times of activities. 
 	 * 
@@ -45,13 +47,17 @@ public class UpdateActivityTimes implements ActivityTimeScheduler{
 	 * <code>activity.getArrTime()</code> and
 	 * <code>activity.getEndTime()</code>
 	 * 
-	 * @author stefan
+	 *
 	 *
 	 */
 	public UpdateActivityTimes(ForwardTransportTime transportTime) {
 		super();
 		timeTracker = new ActivityTimeTracker(transportTime);
 	}
+
+    public UpdateActivityTimes(ForwardTransportTime transportTime, ActivityTimeTracker.ActivityPolicy activityPolicy){
+        timeTracker = new ActivityTimeTracker(transportTime,activityPolicy);
+    }
 
 	@Override
 	public void begin(VehicleRoute route) {
