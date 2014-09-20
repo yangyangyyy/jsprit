@@ -19,6 +19,7 @@ package jsprit.core.algorithm;
 import jsprit.core.algorithm.io.AlgorithmConfig;
 import jsprit.core.algorithm.io.AlgorithmConfigXmlReader;
 import jsprit.core.algorithm.io.VehicleRoutingAlgorithms;
+import jsprit.core.algorithm.state.ActivityTimeScheduler;
 import jsprit.core.algorithm.state.StateManager;
 import jsprit.core.algorithm.state.UpdateEndLocationIfRouteIsOpen;
 import jsprit.core.problem.VehicleRoutingProblem;
@@ -50,8 +51,12 @@ public class VehicleRoutingAlgorithmBuilder {
 	private ConstraintManager constraintManager;
 
 	private int nuOfThreads=0;
-	
-	/**
+
+    private boolean optimizeStartTimes = false;
+
+    private ActivityTimeScheduler activityTimeScheduler;
+
+    /**
 	 * Constructs the builder with the problem and an algorithmConfigFile. Latter is to configure and specify the ruin-and-recreate meta-heuristic.
 	 * 
 	 * @param problem to solve
@@ -84,8 +89,9 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * @param objectiveFunction to be minimized
 	 * @see VariablePlusFixedSolutionCostCalculatorFactory
 	 */
-	public void setObjectiveFunction(SolutionCostCalculator objectiveFunction) {
+	public VehicleRoutingAlgorithmBuilder setObjectiveFunction(SolutionCostCalculator objectiveFunction) {
 		this.solutionCostCalculator = objectiveFunction;
+        return this;
 	}
 
 	/**
@@ -94,8 +100,9 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * @param stateManager that memorizes your states
 	 * @see StateManager
 	 */
-	public void setStateManager(StateManager stateManager) {
-		this.stateManager=stateManager;
+	public VehicleRoutingAlgorithmBuilder setStateManager(StateManager stateManager) {
+        this.stateManager=stateManager;
+        return this;
 	}
 
 	/**
@@ -105,8 +112,9 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * required stateUpdater.
 	 * 
 	 */
-	public void addCoreConstraints() {
+	public VehicleRoutingAlgorithmBuilder addCoreConstraints() {
 		addCoreConstraints=true;
+        return this;
 	}
 
 	/**
@@ -119,8 +127,9 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * <p>Do not use this method, if you plan to control the insertion heuristic
 	 * entirely via hard- and soft-constraints.
 	 */
-	public void addDefaultCostCalculators() {
-		addDefaultCostCalculators=true;
+	public VehicleRoutingAlgorithmBuilder addDefaultCostCalculators() {
+        addDefaultCostCalculators=true;
+        return this;
 	}
 
 	/**
@@ -131,9 +140,10 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * @see StateManager
 	 * @see ConstraintManager
 	 */
-	public void setStateAndConstraintManager(StateManager stateManager, ConstraintManager constraintManager) {
+	public VehicleRoutingAlgorithmBuilder setStateAndConstraintManager(StateManager stateManager, ConstraintManager constraintManager) {
 		this.stateManager=stateManager;
 		this.constraintManager=constraintManager;
+        return this;
 	}
 	
 	/**
@@ -141,8 +151,9 @@ public class VehicleRoutingAlgorithmBuilder {
 	 * 
 	 * @param nuOfThreads to be operated
 	 */
-	public void setNuOfThreads(int nuOfThreads){
+	public VehicleRoutingAlgorithmBuilder setNuOfThreads(int nuOfThreads){
 		this.nuOfThreads=nuOfThreads;
+        return this;
 	}
 
 	/**
@@ -158,8 +169,8 @@ public class VehicleRoutingAlgorithmBuilder {
 		//add core updater
 		stateManager.addStateUpdater(new UpdateEndLocationIfRouteIsOpen());
 //		stateManager.addStateUpdater(new OpenRouteStateVerifier());
-
-		if(addCoreConstraints){
+        stateManager.updateStartTimes(optimizeStartTimes);
+        if(addCoreConstraints){
 			constraintManager.addLoadConstraint();
 			constraintManager.addTimeWindowConstraint();
 			constraintManager.addSkillsConstraint();
@@ -175,8 +186,14 @@ public class VehicleRoutingAlgorithmBuilder {
 		return VehicleRoutingAlgorithms.readAndCreateAlgorithm(vrp, algorithmConfig, nuOfThreads, solutionCostCalculator, stateManager, constraintManager, addDefaultCostCalculators);
 	}
 
-
-    public void setOptimizeStartTimes(boolean optimizeStartTimes) {
-
+    public VehicleRoutingAlgorithmBuilder setOptimizeStartTimes(boolean optimizeStartTimes) {
+        this.optimizeStartTimes = optimizeStartTimes;
+        return this;
     }
+
+//    public VehicleRoutingAlgorithmBuilder setActivityTimeScheduler(ActivityTimeScheduler activityTimeScheduler){
+//        this.activityTimeScheduler = activityTimeScheduler;
+//        return this;
+//    }
+
 }

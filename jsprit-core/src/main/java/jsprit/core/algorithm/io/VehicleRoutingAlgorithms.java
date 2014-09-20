@@ -548,6 +548,7 @@ public class VehicleRoutingAlgorithms {
         }
         else switchAllowed = true;
         ActivityTimeTracker.ActivityPolicy activityPolicy;
+        boolean updateStartTime = stateManager.startTimesUpdated();
         if(stateManager.timeWindowUpdateIsActivated()){
             UpdateVehicleDependentPracticalTimeWindows timeWindowUpdater = new UpdateVehicleDependentPracticalTimeWindows(stateManager,vrp.getTransportCosts());
             timeWindowUpdater.setVehiclesToUpdate(new UpdateVehicleDependentPracticalTimeWindows.VehiclesToUpdate() {
@@ -568,8 +569,9 @@ public class VehicleRoutingAlgorithms {
         }
         else{
             activityPolicy = ActivityTimeTracker.ActivityPolicy.AS_SOON_AS_ARRIVED;
+            updateStartTime = false;
         }
-        stateManager.addStateUpdater(new UpdateActivityTimes(vrp.getTransportCosts(),activityPolicy));
+        stateManager.addStateUpdater(new ActivityTimeSchedulerImpl(vrp.getTransportCosts(),activityPolicy,updateStartTime));
         stateManager.addStateUpdater(new UpdateVariableCosts(vrp.getActivityCosts(), vrp.getTransportCosts(), stateManager, activityPolicy));
 
 		SolutionCostCalculator costCalculator;

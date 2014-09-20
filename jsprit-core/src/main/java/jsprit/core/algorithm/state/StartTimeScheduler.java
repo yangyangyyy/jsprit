@@ -17,34 +17,28 @@
 
 package jsprit.core.algorithm.state;
 
-import jsprit.core.algorithm.recreate.listener.InsertionStartsListener;
-import jsprit.core.algorithm.recreate.listener.JobInsertedListener;
 import jsprit.core.problem.cost.TransportTime;
-import jsprit.core.problem.job.Job;
 import jsprit.core.problem.solution.route.VehicleRoute;
+import jsprit.core.problem.solution.route.activity.TourActivity;
 
-import java.util.Collection;
 
-
-class UpdateStartTimes implements StateUpdater, InsertionStartsListener, JobInsertedListener{
+class StartTimeScheduler {
 
     private TransportTime transportTime;
 
-    UpdateStartTimes(TransportTime transportTime) {
+    StartTimeScheduler(TransportTime transportTime) {
         this.transportTime = transportTime;
     }
 
-    @Override
-    public void informInsertionStarts(Collection<VehicleRoute> vehicleRoutes, Collection<Job> unassignedJobs) {
-        for(VehicleRoute route : vehicleRoutes){
-            if(!route.isEmpty()){
-
-            }
+    public void scheduleStartTime(VehicleRoute route) {
+        if(!route.isEmpty()){
+            double earliestDepartureTime = route.getDepartureTime();
+            TourActivity firstActivity = route.getActivities().get(0);
+            double tpTime_startToFirst = transportTime.getTransportTime(route.getStart().getLocationId(), firstActivity.getLocationId(),
+                    earliestDepartureTime, null, route.getVehicle());
+            double newDepartureTime = Math.max(earliestDepartureTime, firstActivity.getTheoreticalEarliestOperationStartTime()-tpTime_startToFirst);
+            route.setVehicleAndDepartureTime(route.getVehicle(), newDepartureTime);
         }
     }
 
-    @Override
-    public void informJobInserted(Job job2insert, VehicleRoute inRoute, double additionalCosts, double additionalTime) {
-
-    }
 }
