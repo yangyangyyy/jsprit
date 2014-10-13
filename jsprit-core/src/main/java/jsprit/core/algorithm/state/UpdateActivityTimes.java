@@ -32,8 +32,6 @@ import jsprit.core.util.ActivityTimeTracker;
  */
 public class UpdateActivityTimes implements ActivityTimeScheduler{
 
-
-
     private ActivityTimeTracker timeTracker;
 	
 	private VehicleRoute route;

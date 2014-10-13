@@ -56,6 +56,51 @@ public class StateManagerTest {
         return VehicleRoute.Builder.newInstance(vehicle).setJobActivityFactory(new ActFac()).addService(Service.Builder.newInstance("s").setLocationId("loc").build()).build();
     }
 
+
+    @Test
+    public void whenInternalRouteStateIsSet_itMustBeSetCorrectly(){
+        VehicleRoute route = getRoute(mock(Vehicle.class));
+        StateManager stateManager = new StateManager(mock(VehicleRoutingProblem.class));
+        StateId id = InternalStates.COSTS;
+        stateManager.putTypedInternalRouteState(route, id, 10.);
+        assertEquals(10., stateManager.getRouteState(route, id, Double.class), 0.01);
+    }
+
+    @Test
+    public void whenInternalRouteStateIsNotSet_itShouldReturnNull(){
+        VehicleRoute route = getRoute(mock(Vehicle.class));
+        StateManager stateManager = new StateManager(mock(VehicleRoutingProblem.class));
+        StateId id = InternalStates.COSTS;
+        Double costs = stateManager.getRouteState(route, id, Double.class);
+        assertTrue(costs == null);
+    }
+
+    @Test
+    public void whenVehicleDependentInternalRouteStateIsSet_itMustBeSetCorrectly(){
+        VehicleImpl vehicle = VehicleImpl.Builder.newInstance("v").setStartLocationId("loc").build();
+        //noinspection UnusedDeclaration
+        VehicleRoutingProblem vrp = VehicleRoutingProblem.Builder.newInstance().addVehicle(vehicle).build();
+
+        VehicleRoute route = getRoute(vehicle);
+        StateManager stateManager = new StateManager(mock(VehicleRoutingProblem.class));
+        StateId id = InternalStates.COSTS;
+        stateManager.putTypedInternalRouteState(route, vehicle, id, 10.);
+        assertEquals(10.,stateManager.getRouteState(route, vehicle, id, Double.class),0.01);
+    }
+
+    @Test
+    public void whenVehicleDependentInternalRouteStateIsNotSet_itMustBeSetCorrectly(){
+        VehicleImpl vehicle = VehicleImpl.Builder.newInstance("v").setStartLocationId("loc").build();
+        //noinspection UnusedDeclaration
+        VehicleRoutingProblem vrp = VehicleRoutingProblem.Builder.newInstance().addVehicle(vehicle).build();
+
+        VehicleRoute route = getRoute(vehicle);
+        StateManager stateManager = new StateManager(mock(VehicleRoutingProblem.class));
+        StateId id = InternalStates.COSTS;
+        Double costs = stateManager.getRouteState(route, vehicle, id, Double.class);
+        assertTrue(costs == null);
+    }
+
     @Test
 	public void whenRouteStateIsSetWithGenericMethodAndBoolean_itMustBeSetCorrectly(){
         VehicleRoute route = getRoute(mock(Vehicle.class));
