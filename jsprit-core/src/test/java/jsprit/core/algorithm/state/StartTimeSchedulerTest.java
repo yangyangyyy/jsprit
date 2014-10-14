@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class UpdateStartTimesTest {
+public class StartTimeSchedulerTest {
 
     VehicleRoute route0;
 
@@ -38,7 +38,7 @@ public class UpdateStartTimesTest {
 
     VehicleRoutingTransportCosts euclidean;
 
-    StartTimeScheduler updateStartTimes;
+    StartTimeSchedulerImpl updateStartTimes;
 
     @Before
     public void doBefore(){
@@ -53,7 +53,7 @@ public class UpdateStartTimesTest {
         route2 = VehicleRoute.Builder.newInstance(vehicle).addService(service3).addService(service4).build();
 
         euclidean = CostFactory.createEuclideanCosts();
-        updateStartTimes = new StartTimeScheduler(euclidean);
+        updateStartTimes = new StartTimeSchedulerImpl(euclidean);
     }
 
     @Test

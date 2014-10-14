@@ -21,20 +21,22 @@ import jsprit.core.problem.cost.TransportTime;
 import jsprit.core.problem.solution.route.VehicleRoute;
 import jsprit.core.problem.solution.route.activity.TourActivity;
 
-
-class StartTimeScheduler {
+/**
+ * Determines vehicle's departure so that it is has no waiting time at first activity.
+ */
+class StartTimeSchedulerImpl {
 
     private TransportTime transportTime;
 
-    StartTimeScheduler(TransportTime transportTime) {
+    StartTimeSchedulerImpl(TransportTime transportTime) {
         this.transportTime = transportTime;
     }
 
     public void scheduleStartTime(VehicleRoute route) {
         if(!route.isEmpty()){
-            double earliestDepartureTime = route.getDepartureTime();
+            double earliestDepartureTime = route.getVehicle().getEarliestDeparture();
             TourActivity firstActivity = route.getActivities().get(0);
-            double tpTime_startToFirst = transportTime.getTransportTime(route.getStart().getLocationId(), firstActivity.getLocationId(),
+            double tpTime_startToFirst = transportTime.getBackwardTransportTime(route.getStart().getLocationId(), firstActivity.getLocationId(),
                     earliestDepartureTime, null, route.getVehicle());
             double newDepartureTime = Math.max(earliestDepartureTime, firstActivity.getTheoreticalEarliestOperationStartTime()-tpTime_startToFirst);
             route.setVehicleAndDepartureTime(route.getVehicle(), newDepartureTime);

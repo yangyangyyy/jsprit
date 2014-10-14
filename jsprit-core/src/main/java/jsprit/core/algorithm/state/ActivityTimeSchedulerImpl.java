@@ -28,12 +28,12 @@ public class ActivityTimeSchedulerImpl implements ActivityTimeScheduler{
 
     private boolean optimizeStartTimes;
 
-    private StartTimeScheduler startTimeScheduler;
+    private StartTimeSchedulerImpl startTimeScheduler;
 
     public ActivityTimeSchedulerImpl(TransportTime transportTime, ActivityTimeTracker.ActivityPolicy activityPolicy, boolean optimizeStartTimes) {
         this.updateActivityTimes = new UpdateActivityTimes(transportTime,activityPolicy);
         this.optimizeStartTimes = optimizeStartTimes;
-        startTimeScheduler = new StartTimeScheduler(transportTime);
+        startTimeScheduler = new StartTimeSchedulerImpl(transportTime);
     }
 
     @Override
